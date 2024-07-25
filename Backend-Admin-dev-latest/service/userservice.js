@@ -1,6 +1,20 @@
 
 const { db } = require("../db/mysqldb.js");
-const user = require("../model/user")
+
+var getUserbyNameAsync = async (name) => {
+  let sql = "SELECT * FROM user where username=? ";
+  let result = await db.query(sql, [name]);
+  let user = { id: 0 };
+  if (result[0].length > 0) {
+    user.id = result[0][0].id;
+    user.username = result[0][0].username;
+    user.password = result[0][0].password;
+    user.email = result[0][0].email;
+    user.age = result[0][0].age;
+    user.gender = result[0][0].gender;
+  }
+  return { isSuccess: true, message: "", data: user };
+};
 
 
 var getUserListAsync = async (page, pageSize) => {
@@ -39,6 +53,7 @@ var getUserListAsync = async (page, pageSize) => {
 
 
 module.exports = {
-  getUserListAsync
+  getUserListAsync,
+  getUserbyNameAsync
  
 };

@@ -34,11 +34,11 @@ config the mysql username and password to your own, and the appconfig example fi
 
 ### first time seed origin data in database
 
-`npm run init-db`
+
 
 ### after test want to reset data in database
 
-`npm run reset-db`
+
 
 ### run the application
 

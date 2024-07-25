@@ -41,27 +41,6 @@ const loginAsync = async (req, res) => {
 };
 
 
-const logoutAsync = async (req, res) => {
-  try {
-    // Assume the token is in the Authorization header as a Bearer token
-    const token = req.headers.authorization?.split(" ")[1];
-    if (token) {
-      // Log the logout action, if logging is set up
-      logger.info(`User logged out with token: ${token}`);
-
-      // Respond to the client that the logout was successful
-      res.sendCommonValue(null, "logout successful", 1);
-    } else {
-      // If no token was provided, respond with an error
-      res.sendCommonValue(null, "No token provided, logout failed", 0);
-    }
-  } catch (error) {
-    // Log the error if something goes wrong
-    logger.error('Logout error: ', error);
-    res.sendCommonValue(null, "Logout failed due to server error", 0);
-  }
-};
-
 module.exports = {
-  registerAsync
+  loginAsync
 };
