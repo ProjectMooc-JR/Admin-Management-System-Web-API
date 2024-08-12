@@ -55,6 +55,7 @@ app.use(
   })
 );
 
+
 app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
 });
@@ -67,6 +68,13 @@ app.use("/api/auth", authrouter);
 const userrouter = require("./router/userrouter");
 app.use("/api/users", userrouter);
 
+//config courserouter
+const courseRoutes = require('./router/courseRoutes');
+app.use('/api/courses', courseRoutes);
+
+//config chapterrouter
+const chapterRoutes = require('./router/chapterRoutes');
+app.use('/api/chapters', chapterRoutes);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
@@ -76,3 +84,4 @@ let port = process.env.PORT || 9000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port},http://localhost:${port}`);
 });
+
