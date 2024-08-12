@@ -11,7 +11,7 @@ router.post('/:courseId/chapters', commonValidate(/**/), addChapter);
  * /api/chapters:
  *   get:
  *     tags:
- *       - Chapter Controller
+ *       - Chapter
  *     summary: 获取所有章节
  *     description: 获取章节列表
  *     responses:

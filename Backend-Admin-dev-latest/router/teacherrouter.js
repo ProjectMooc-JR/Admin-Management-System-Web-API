@@ -25,7 +25,7 @@ router.post(
  * '/api/teachers':
  *  get:
  *     tags:
- *     - teacher Controller
+ *     - teacher
  *     summary: Get all teachers
  *     security:
  *       - BearerAuth: []
