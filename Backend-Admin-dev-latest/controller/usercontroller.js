@@ -47,6 +47,17 @@ const addUserAsync = async (req, res) => {
   }
 };
 
+// const getUserAsync = (req, res) => {
+//   let username = req.query.username;
+//   let result = userservice.getUserbyNameAsync(username);
+//   console.log(`getUserAsync: ${result.data}`);
+//   if (result.isSuccess) {
+//     res.sendCommonValue(result.data, "success", 1);
+//   } else {
+//     res.sendCommonValue({}, "failed", 1);
+//   }
+// };
+
 const getUserAsync = async (req, res) => {
   let username = req.query.username;
   try {

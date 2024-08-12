@@ -29,7 +29,7 @@ app.use(cors());
 const returnvalue = require("./middleware/returnvalue");
 app.use(returnvalue.returnvalue);
 
-//config json body
+//config josn body
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: false, limit: "5mb" }));
 
@@ -46,30 +46,18 @@ app.use(
   swaggerUi.setup(swaggerDocument, swaggerUiOptions)
 );
 
-// //config jwt
-// const { jwtConfig } = require("./appConfig");
-// let { expressjwt: jwt } = require("express-jwt");
-// app.use(
-//   jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
-//     path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
-//   })
-// );
+//config jwt
+const { jwtConfig } = require("./appConfig");
+let { expressjwt: jwt } = require("express-jwt");
+app.use(
+  jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
+    path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
 });
-
-
-// app.get('/users', async (req, res, next) => {
-//   try {
-//     const users = await getUsersListAsync();
-//     console.log('success')
-//     res.json(users);
-//   } catch (err) {
-//     console.log('error');
-//     //next(err); // 传递错误到中间件
-//   }
-// });
 
 //config authrouter
 const authrouter = require("./router/authrouter");
@@ -79,15 +67,10 @@ app.use("/api/auth", authrouter);
 const userrouter = require("./router/userrouter");
 app.use("/api/users", userrouter);
 
-//config commentrouter
-const commentrouter = require("./router/commentrouter");
-app.use("/api/comments", commentrouter);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
 app.use(erorhandle.errorhandling);
-
-
 
 let port = process.env.PORT || 9000;
 app.listen(port, () => {

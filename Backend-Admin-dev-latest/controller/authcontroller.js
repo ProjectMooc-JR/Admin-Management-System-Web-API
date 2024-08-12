@@ -3,8 +3,7 @@ const bcrypt = require("bcrypt");
 const logger = require("../common/logsetting");
 const { jwtConfig } = require("../appConfig");
 const jwt = require("jsonwebtoken");
-const userservice= require("../service/userservice");
-const commentservice = require("../service/commentservice");
+const userservice = require("../service/userservice");
 
 const loginAsync = async (req, res) => {
   let username = req.body.username;
@@ -40,8 +39,6 @@ const loginAsync = async (req, res) => {
     }
   }
 };
-
-
 
 
 module.exports = {

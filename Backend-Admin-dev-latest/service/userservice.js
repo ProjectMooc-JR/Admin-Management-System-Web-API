@@ -2,26 +2,20 @@
 const { db } = require("../db/mysqldb.js");
 
 var getUserbyNameAsync = async (name) => {
-  let sql = "SELECT * FROM user where username= ? ";
+  let sql = "SELECT * FROM user where username=? ";
   let result = await db.query(sql, [name]);
-  
   let user = { id: 0 };
   if (result[0].length > 0) {
     user.id = result[0][0].id;
     user.username = result[0][0].username;
     user.password = result[0][0].password;
-    user.email = result[0][0].email;  
-    user.address = result[0][0].address;
+    user.email = result[0][0].email;
     user.age = result[0][0].age;
     user.gender = result[0][0].gender;
-    user.avatar = result[0][0].avatar;
-    user.nickname = result[0][0].nickname;
-    user.access = result[0][0].access;
-    user.active = result[0][0].active;
-    
   }
   return { isSuccess: true, message: "", data: user };
 };
+
 
 var getUserListAsync = async (page, pageSize) => {
   let countSql = "SELECT count(*) total FROM user; ";
@@ -30,7 +24,7 @@ var getUserListAsync = async (page, pageSize) => {
   if (total == 0) {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
-  let sql = "SELECT * FROM user limit ? offset ?;";
+  let sql = "SELECT * FROM user limit ? offset ? ;";
   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
 
   let userlist = [];
@@ -39,15 +33,13 @@ var getUserListAsync = async (page, pageSize) => {
       let user = { id: 0 };
       user.id = element.id;
       user.username = element.username;
-      user.password = element.password;
-      user.email = element.email;  
+      //user.password = element.password;
+      user.email = element.email;
       user.address = element.address;
       user.age = element.age;
       user.gender = element.gender;
       user.avatar = element.avatar;
-      user.nickname = element.nickname;
       user.access = element.access;
-      user.active = element.active;
       userlist.push(user);
     });
   }
@@ -62,6 +54,6 @@ var getUserListAsync = async (page, pageSize) => {
 
 module.exports = {
   getUserListAsync,
-  getUserbyNameAsync,
+  getUserbyNameAsync
  
 };
