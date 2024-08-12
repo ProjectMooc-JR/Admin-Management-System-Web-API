@@ -67,6 +67,13 @@ app.use("/api/auth", authrouter);
 const userrouter = require("./router/userrouter");
 app.use("/api/users", userrouter);
 
+//config courserouter
+const courseRoutes = require('./router/courseRoutes');
+app.use('/api/courses', courseRoutes);
+
+//config chapterrouter
+const chapterRoutes = require('./router/chapterRoutes');
+app.use('/api/chapters', chapterRoutes);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");

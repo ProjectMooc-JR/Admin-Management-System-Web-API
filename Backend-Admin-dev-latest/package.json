@@ -1,6 +1,6 @@
 {
   "name": "nodeadmin",
-  "version": "1.0.33",
+  "version": "1.0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
