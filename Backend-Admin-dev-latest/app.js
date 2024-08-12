@@ -67,6 +67,10 @@ app.use("/api/auth", authrouter);
 const userrouter = require("./router/userrouter");
 app.use("/api/users", userrouter);
 
+//config teacherrouter
+const teacherRouter = require("./router/teacherrouter");
+app.use("/api/teachers", teacherRouter);
+
 //config courserouter
 const courseRoutes = require('./router/courseRoutes');
 app.use('/api/courses', courseRoutes);
