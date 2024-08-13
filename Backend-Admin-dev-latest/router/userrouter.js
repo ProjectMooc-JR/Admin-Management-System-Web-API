@@ -7,6 +7,48 @@ const { commonValidate } = require("../middleware/expressValidator");
 
 var usercontroller = require("../controller/usercontroller");
 
+//add user
+/**
+ * @openapi
+ * '/api/users':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: add user
+ *     description: add user
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+ router.post("",
+ commonValidate([
+   body("username").notEmpty().withMessage("username invalid"),
+   body("password").notEmpty().isLength({ min: 8 }),
+   body("email").isEmail().withMessage("email address invalid"),
+   body("access").notEmpty().isIn(["admin", "student", "teacher"]).withMessage("access invalid"),
+ ]),
+ usercontroller.addUserAsync
+);
+ 
+
+//delete
+
+//search by Id
+
+
+//update
+
+
 
 /**
  * @openapi
@@ -54,7 +96,5 @@ router.get(
   ]),
   usercontroller.getUserListAsync
 );
-
-
 
 module.exports = router;
