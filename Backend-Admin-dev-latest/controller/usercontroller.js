@@ -31,6 +31,7 @@ const addUserAsync = async (req, res) => {
   user.gender = req.body.gender;
   user.avatar = avatarLocation;
   user.access = req.body.access;
+  user.active = req.body.active;
 
   let password = req.body.password;
   //encryption password
@@ -74,45 +75,45 @@ const getUserAsync = async (req, res) => {
   }
 };
 
-const getUserListByAccessAsync = async (req, res) => {
-  const access = req.params.access;
-  const result = await userservice.getUserListByAccessAsync(access);
-  return (result.isSuccess) ? res.sendCommonValue(result.data, result.message, 1)
-    : res.sendCommonValue(result.data, result.message, 0);
-}
+// const getUserListByAccessAsync = async (req, res) => {
+//   const access = req.params.access;
+//   const result = await userservice.getUserListByAccessAsync(access);
+//   return (result.isSuccess) ? res.sendCommonValue(result.data, result.message, 1)
+//     : res.sendCommonValue(result.data, result.message, 0);
+// }
 
-const getUserListAsync = async (req, res) => {
-  let page = parseInt(req.params.page);
-  let pageSize = parseInt(req.params.pageSize);
-  let result = await userservice.getUserListAsync(page, pageSize);
-  if (result.isSuccess) {
-    res.sendCommonValue(result.data, "success", 1);
-  } else {
-    res.sendCommonValue([], "failed", 0);
-  }
-};
+// const getUserListAsync = async (req, res) => {
+//   let page = parseInt(req.params.page);
+//   let pageSize = parseInt(req.params.pageSize);
+//   let result = await userservice.getUserListAsync(page, pageSize);
+//   if (result.isSuccess) {
+//     res.sendCommonValue(result.data, "success", 1);
+//   } else {
+//     res.sendCommonValue([], "failed", 0);
+//   }
+// };
 
-const deUserByIdAsync = async (req, res) => {
-  let ids = req.params.ids;
-  let result = await userservice.delUserByIdAsync(ids);
-  if (result.isSuccess) {
-    res.sendCommonValue({}, "success", 1);
-  } else {
-    res.sendCommonValue({}, "failed", 0);
-  }
-};
+// const deUserByIdAsync = async (req, res) => {
+//   let ids = req.params.ids;
+//   let result = await userservice.delUserByIdAsync(ids);
+//   if (result.isSuccess) {
+//     res.sendCommonValue({}, "success", 1);
+//   } else {
+//     res.sendCommonValue({}, "failed", 0);
+//   }
+// };
 
-const updateUserAsync = async (req, res) => {
-  //check username not in db
-  let user = {};
-  user.id = parseInt(req.params.id);
-  user.username = req.body.username;
-  user.email = req.body.email;
-  user.address = req.body.address;
-  user.age = req.body.age;
-  user.gender = req.body.gender;
-  user.avatar = req.body.avatar;
-  user.access = req.body.access;
+// const updateUserAsync = async (req, res) => {
+//   //check username not in db
+//   let user = {};
+//   user.id = parseInt(req.params.id);
+//   user.username = req.body.username;
+//   user.email = req.body.email;
+//   user.address = req.body.address;
+//   user.age = req.body.age;
+//   user.gender = req.body.gender;
+//   user.avatar = req.body.avatar;
+//   user.access = req.body.access;
 
   // let checkUserResult = await userservice.checkUserNameAsync(
   //   // user.username,
@@ -122,54 +123,54 @@ const updateUserAsync = async (req, res) => {
   //   res.sendCommonValue({}, "Username and User ID do not exists", 400, 400);
   //   return;
   // }
-  if (!Number.isInteger(user.id)) {
-    res.status(400).send({ message: "Invalid user ID" });
-    return;
-  }
-  let dbResult = await userservice.uptUserByIdAsync(user);
-  if (dbResult.isSuccess) {
-    res.sendCommonValue(user, "Updated user succeed", 1);
-    return;
-  } else {
-    res.sendCommonValue({}, "", 0);
-  }
-};
+//   if (!Number.isInteger(user.id)) {
+//     res.status(400).send({ message: "Invalid user ID" });
+//     return;
+//   }
+//   let dbResult = await userservice.uptUserByIdAsync(user);
+//   if (dbResult.isSuccess) {
+//     res.sendCommonValue(user, "Updated user succeed", 1);
+//     return;
+//   } else {
+//     res.sendCommonValue({}, "", 0);
+//   }
+// };
 
-const updatePasswordAsync = async (req, res) => {
-  const userId = parseInt(req.params.id);
-  const password = req.body.password;
+// const updatePasswordAsync = async (req, res) => {
+//   const userId = parseInt(req.params.id);
+//   const password = req.body.password;
 
 
 
   // Hash the new password before storing it
-  let encrypPassword = await bcrypt.hashSync(password, bcryptConfig.salt);
+//   let encrypPassword = await bcrypt.hashSync(password, bcryptConfig.salt);
 
-  // Update the password in the database
-  let dbResult = await userservice.updatePasswordByIdAsync(userId, encrypPassword);
-  if (dbResult.isSuccess) {
-    res.sendCommonValue({}, "Password updated successfully", 1);
-  } else {
-    res.sendCommonValue({}, "Failed to update password", 0);
-  }
-};
+//   // Update the password in the database
+//   let dbResult = await userservice.updatePasswordByIdAsync(userId, encrypPassword);
+//   if (dbResult.isSuccess) {
+//     res.sendCommonValue({}, "Password updated successfully", 1);
+//   } else {
+//     res.sendCommonValue({}, "Failed to update password", 0);
+//   }
+// };
 
-const getUserByIdAsync = async (req, res) => {
-  let id = parseInt(req.query.id);
-  let result = await userservice.getUserbyIdAsync(id);
-  if (result.isSuccess) {
-    res.sendCommonValue(result.data, "success", 1);
-  } else {
-    res.sendCommonValue([], "failed", 0);
-  }
-};
+// const getUserByIdAsync = async (req, res) => {
+//   let id = parseInt(req.query.id);
+//   let result = await userservice.getUserbyIdAsync(id);
+//   if (result.isSuccess) {
+//     res.sendCommonValue(result.data, "success", 1);
+//   } else {
+//     res.sendCommonValue([], "failed", 0);
+//   }
+// };
 
 module.exports = {
   addUserAsync,
   getUserAsync,
-  getUserListAsync,
-  deUserByIdAsync,
-  updateUserAsync,
-  getUserByIdAsync,
-  getUserListByAccessAsync,
-  updatePasswordAsync
+  //getUserListAsync,
+  //deUserByIdAsync,
+  //updateUserAsync,
+  //getUserByIdAsync,
+  //getUserListByAccessAsync,
+  //updatePasswordAsync
 };
