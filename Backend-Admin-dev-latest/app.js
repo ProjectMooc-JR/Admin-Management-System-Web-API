@@ -79,9 +79,20 @@ app.use("/api/auth", authrouter);
 const userrouter = require("./router/userrouter");
 app.use("/api/users", userrouter);
 
-//config commentrouter
-const commentrouter = require("./router/commentrouter");
-app.use("/api/comments", commentrouter);
+//config teacherrouter
+const teacherRouter = require("./router/teacherrouter");
+app.use("/api/teachers", teacherRouter);
+
+//config courserouter
+const courseRoutes = require('./router/courseRoutes');
+app.use('/api/courses', courseRoutes);
+
+//config chapterrouter
+const chapterRoutes = require('./router/chapterRoutes');
+app.use('/api/chapters', chapterRoutes);
+
+const courseScheduleRouter = require("./router/courseScheduleRouter");
+app.use("/api/courseSchedule", courseScheduleRouter);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
