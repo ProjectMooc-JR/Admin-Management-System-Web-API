@@ -8,7 +8,7 @@ const getAllTeachersAsync = async () => {
   return { isSuccess: true, message: "", data: result[0] };
 };
 
-// 根据教师ID获取教师
+// Get teachers' information by ID
 const getTeacherByIdAsync = async (id) => {
   // 定义用ID拿取teacher数据的sql语句
   let sql = "select * from teachers where id = ?";
