@@ -60,13 +60,17 @@ app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
 });
 
-//config authrouter
-const authrouter = require("./router/authrouter");
-app.use("/api/auth", authrouter);
+// //config authrouter
+// const authrouter = require("./router/authrouter");
+// app.use("/api/auth", authrouter);
 
-//config userrouter
-const userrouter = require("./router/userrouter");
-app.use("/api/users", userrouter);
+// //config userrouter
+// const userrouter = require("./router/userrouter");
+// app.use("/api/users", userrouter);
+
+// //config teacherrouter
+// const teacherRouter = require("./router/teacherrouter");
+// app.use("/api/teachers", teacherRouter);
 
 //config courserouter
 const courseRoutes = require('./router/courseRoutes');
@@ -76,12 +80,15 @@ app.use('/api/courses', courseRoutes);
 const chapterRoutes = require('./router/chapterRoutes');
 app.use('/api/chapters', chapterRoutes);
 
+const courseScheduleRouter = require("./router/courseScheduleRouter");
+app.use("/api/courseSchedule", courseScheduleRouter);
+
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
 app.use(erorhandle.errorhandling);
 
-let port = process.env.PORT || 9000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port},http://localhost:${port}`);
-});
+// let port = process.env.PORT || 9000;
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port},http://localhost:${port}`);
+// });
 
