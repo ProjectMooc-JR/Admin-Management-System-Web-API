@@ -2,9 +2,9 @@ const express = require("express");
 
 const app = express();
 
-const morgan = require("morgan")
+const morgan = require("morgan");
 
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 
 const bcrypt = require("bcrypt");
 
@@ -29,7 +29,7 @@ app.use(cors());
 const returnvalue = require("./middleware/returnvalue");
 app.use(returnvalue.returnvalue);
 
-//config josn body
+//config json body
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: false, limit: "5mb" }));
 
@@ -51,7 +51,13 @@ const { jwtConfig } = require("./appConfig");
 let { expressjwt: jwt } = require("express-jwt");
 app.use(
   jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
-    path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
+    path: [
+      "/",
+      "/api-docs",
+      "/api/auth/login",
+      "/api/auth/loginOut",
+      "/api/auth/register",
+    ],
   })
 );
 
@@ -59,28 +65,42 @@ app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
 });
 
+// app.get('/users', async (req, res, next) => {
+//   try {
+//     const users = await getUsersListAsync();
+//     console.log('success')
+//     res.json(users);
+//   } catch (err) {
+//     console.log('error');
+//     //next(err); // 传递错误到中间件
+//   }
+// });
+
 //config authrouter
 const authrouter = require("./router/authrouter");
 app.use("/api/auth", authrouter);
 
-//config userrouter
-const userrouter = require("./router/userrouter");
-app.use("/api/users", userrouter);
+// //config userrouter
+// const userrouter = require("./router/userrouter");
+// app.use("/api/users", userrouter);
 
+//config commentrouter
+const commentrouter = require("./router/commentrouter");
+app.use("/api/comments", commentrouter);
 //config teacherrouter
 const teacherRouter = require("./router/teacherrouter");
 app.use("/api/teachers", teacherRouter);
 
 //config courserouter
-const courseRoutes = require('./router/courseRoutes');
-app.use('/api/courses', courseRoutes);
+const courseRoutes = require("./router/courseRoutes");
+app.use("/api/courses", courseRoutes);
 
 //config chapterrouter
-const chapterRoutes = require('./router/chapterRoutes');
-app.use('/api/chapters', chapterRoutes);
+const chapterRoutes = require("./router/chapterRoutes");
+app.use("/api", chapterRoutes);
 
-const courseScheduleRouter = require("./router/courseScheduleRouter");
-app.use("/api/courseSchedule", courseScheduleRouter);
+// const courseScheduleRouter = require("./router/courseScheduleRouter");
+// app.use("/api/courseSchedule", courseScheduleRouter);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");

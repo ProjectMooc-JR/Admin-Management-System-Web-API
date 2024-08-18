@@ -17,10 +17,11 @@ const mysql2 = require("mysql2/promise"); // support await/async
 const { dbConfig } = require("../appConfig"); // 确保引用正确的配置
 
 const db = mysql2.createPool({
-  host: dbConfig.host,
-  user: dbConfig.user,
-  password: dbConfig.password,
-  database: dbConfig.database,
+  host: mysqlConfig.host,
+  port: mysqlConfig.port,
+  user: mysqlConfig.user,
+  password: mysqlConfig.password,
+  database: mysqlConfig.database,
 });
 
 module.exports = {
