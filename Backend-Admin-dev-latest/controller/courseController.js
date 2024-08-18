@@ -52,9 +52,9 @@ const updateCourse = async (req, res) => {
 
 
 //Delete course by ID
-const deleteCourseByIdAsync = async (req, res) => {
+const deleteCourseById = async (req, res) => {
     const id = parseInt(req.params.courseId);
-    const result = await courseService.deleteCourseByIdAsync(id);
+    const result = await courseService.deleteCourse(id);
     res.status(result.isSuccess ? 200 : 400).json({
     status: result.isSuccess ? 200 : 400,
     message: result.message
@@ -91,7 +91,7 @@ const getCourseById = async (req, res) => {
 module.exports = {
     createCourse,
     updateCourse,
-    deleteCourseByIdAsync,
+    deleteCourseById,
     getAllCourses,
     getCourseById,
 };

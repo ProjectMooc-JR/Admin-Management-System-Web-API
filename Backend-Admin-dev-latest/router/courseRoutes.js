@@ -14,53 +14,150 @@ const courseValidationRules = [
     // Add more validation rules as needed
 ];
 
+
 /**
- * @swagger
- * /courses:
- *   post:
- *     summary: Create a new course
- *     tags: [Courses]
+ * @openapi
+ * '/api/courses':
+ *  post:
+ *     tags:
+ *     - Course Controller
+ *     summary: add course
+ *     description: add course
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     requestBody:
- *       required: true
- *       content:
- *         application/json:
+ *      required: true
+ *      content:
+ *        application/json:
  *           schema:
- *             type: object
- *             properties:
- *               CourseName:
- *                 type: string
- *                 description: Name of the course
- *                 example: "Introduction to JavaScript"
- *               Description:
- *                 type: string
- *                 description: Detailed description of the course
- *                 example: "A beginner's guide to JavaScript."
- *               CategoryID:
- *                 type: integer
- *                 description: Category ID the course belongs to
- *                 example: 1
- *               Cover:
- *                 type: string
- *                 description: URL or path to the course cover image
- *                 example: "https://example.com/course-cover.jpg"
- *               PublishedAt:
- *                 type: string
- *                 format: date-time
- *                 description: Date and time when the course was published
- *                 example: "2024-08-10T12:00:00Z"
+ *            type: object
+ *            required:
+ *              - CourseName
+ *              - Description
+ *              - CategoryID
+ *              - Cover
+ *              - PublishedAt
+ *              - teacherId
+ *            properties:
+ *              CourseName:
+ *                type: string
+ *                default: Test1000
+ *              Description:
+ *                type: string
+ *                default: Test1000
+ *              CategoryID:
+ *                type: integer
+ *                default: 1
+ *              Cover:
+ *                type: string
+ *                default: Cover
+ *              PublishedAt:
+ *                type: date-time
+ *                default: "2024-08-10 12:00:00"
+ *              teacherId:
+ *                type: number
+ *                default: 1
  *     responses:
- *       201:
- *         description: Course created successfully
- *       400:
- *         description: Bad request with validation errors
- *       500:
- *         description: Internal server error
+ *      201:
+ *        description: Created
+ *      400:
+ *        description: Bad Request
+ *      404:
+ *        description: Not Found
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
  */
 router.post('/', commonValidate(courseValidationRules), courseController.createCourse);
+
+/**
+ * @openapi
+ * '/api/courses/{courseId}':
+ *  put:
+ *     tags:
+ *     - Course Controller
+ *     summary: Update Course
+ *     description: update Course
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The id of the course
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required:
+ *              - CourseName
+ *              - CategoryID
+ *            properties:
+ *              CourseName:
+ *                type: string
+ *                default: Test1000
+ *              Description:
+ *                type: string
+ *                default: Test1000
+ *              CategoryID:
+ *                type: number
+ *                default: 1
+ *              Cover:
+ *                type: string
+ *                default: Cover
+ *              PublishedAt:
+ *                type: string
+ *                default: "2024-08-19 12:00:00"
+ *              teacherId:
+ *                type: number
+ *                default: 1
+ *     responses:
+ *      201:
+ *        description: Created
+ *      400:
+ *        description: Bad Request
+ *      404:
+ *        description: Not Found
+ *      409:
+ *        description: Conflict
+ *      500:
+ *        description: Server Error
+ */
 router.put('/:courseId', commonValidate(courseValidationRules), courseController.updateCourse);
-router.delete('/:courseId', courseController.deleteCourseByIdAsync);
+
+/**
+ * @openapi
+ * '/api/courses/{courseId}':
+ *  delete:
+ *     tags:
+ *     - Course Controller
+ *     summary: delete courses by courseId
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: courseId
+ *        in: path
+ *        description: The ids of the courses
+ *        required: true
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+router.delete('/:courseId', courseController.deleteCourseById);
+
 router.get('/:courseId', courseController.getCourseById);
 
 module.exports = router;

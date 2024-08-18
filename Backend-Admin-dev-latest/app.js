@@ -80,12 +80,10 @@ app.use("/api/auth", authrouter);
 // const userrouter = require("./router/userrouter");
 // app.use("/api/users", userrouter);
 
-<<<<<<< HEAD
-=======
 //config commentrouter
 const commentrouter = require("./router/commentrouter");
 app.use("/api/comments", commentrouter);
->>>>>>> f1f5eb55ec9c46a15c6f603ce21295db9fc13d2e
+
 //config teacherrouter
 const teacherRouter = require("./router/teacherrouter");
 app.use("/api/teachers", teacherRouter);

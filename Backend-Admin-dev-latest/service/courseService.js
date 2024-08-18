@@ -94,7 +94,8 @@ const deleteComments = async (courseId) => {
 };
 
 const deleteCourse = async (courseId) => {
-  if (deleteChapter(courseId) && deleteComments(courseId)) {
+    deleteChapter(courseId);
+    deleteComments(courseId);
     const query = "DELETE FROM Courses WHERE ID = ?";
 
     try {
@@ -106,10 +107,7 @@ const deleteCourse = async (courseId) => {
     } catch (error) {
       throw new Error(`Error deleting course: ${error.message}`);
     }
-  }else{
-    throw new Error(`Error deleting course: ${error.message}`);
   }
-};
 
 // Get all courses
 const getAllCourses = async () => {
