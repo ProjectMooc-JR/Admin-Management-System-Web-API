@@ -1,4 +1,3 @@
-
 const { db } = require("../db/mysqldb.js");
 
 //get user by name
@@ -37,9 +36,46 @@ const addUserAsync = async (user) => {
     user.access,
     user.active,
   ]);
-  return { isSuccess: true, message: "add user successfully" };
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "User added successfully" };
+  } else {
+    return { isSuccess: false, message: "Fail to add user" };
+  }
 };
 
+//delete user
+const deleteUserByIdAsync = async (id) => {
+  let sql = "Delete FROM user where id = ?";
+  let [result] = await db.query(sql, [id]);
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "Delete successfully" };
+  }
+
+  return { isSuccess: false, message: "Fail to delete" };
+};
+
+//update
+const updateUserByIdAsync = async (user) => {
+  // SQL query statement
+  let sql = `UPDATE user SET username = ?, email = ?, address = ?, age = ?, gender = ?, avatar = ?, nickname = ?, access = ?,active = ?, WHERE id = ?`;
+   // Executing the query
+  let result = await db.query(sql, [
+    user.username,
+    user.email,
+    user.address,
+    user.age,
+    user.gender,
+    user.avatar,
+    user.nickname,
+    user.access,
+    user.active,
+    user.id // The ID should be at the end to match the WHERE clause
+  ]);
+  if (result[0].affectedRows > 0) {
+    return { isSuccess: true, message: "Update successful" };
+  }
+  return { isSuccess: false, message: "Fail to update" };
+};
 
 // var getUserListAsync = async (page, pageSize) => {
 //   let countSql = "SELECT count(*) total FROM user; ";
@@ -79,5 +115,7 @@ const addUserAsync = async (user) => {
 module.exports = {
   //getUserListAsync,
   getUserbyNameAsync,
-  addUserAsync
+  addUserAsync,
+  deleteUserByIdAsync,
+  updateUserByIdAsync,
 };
