@@ -46,14 +46,15 @@ app.use(
   swaggerUi.setup(swaggerDocument, swaggerUiOptions)
 );
 
-// //config jwt
-// const { jwtConfig } = require("./appConfig");
-// let { expressjwt: jwt } = require("express-jwt");
-// app.use(
-//   jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
-//     path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
-//   })
-// );
+//config jwt
+const { jwtConfig } = require("./appConfig");
+let { expressjwt: jwt } = require("express-jwt");
+app.use(
+  jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
+    path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
+  })
+);
+
 
 app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
@@ -75,9 +76,9 @@ app.get("/", (req, res) => {
 const authrouter = require("./router/authrouter");
 app.use("/api/auth", authrouter);
 
-//config userrouter
-const userrouter = require("./router/userrouter");
-app.use("/api/users", userrouter);
+// //config userrouter
+// const userrouter = require("./router/userrouter");
+// app.use("/api/users", userrouter);
 
 <<<<<<< HEAD
 =======
@@ -95,10 +96,10 @@ app.use('/api/courses', courseRoutes);
 
 //config chapterrouter
 const chapterRoutes = require('./router/chapterRoutes');
-app.use('/api/chapters', chapterRoutes);
+app.use('/api', chapterRoutes);
 
-const courseScheduleRouter = require("./router/courseScheduleRouter");
-app.use("/api/courseSchedule", courseScheduleRouter);
+// const courseScheduleRouter = require("./router/courseScheduleRouter");
+// app.use("/api/courseSchedule", courseScheduleRouter);
 
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
@@ -110,3 +111,4 @@ let port = process.env.PORT || 9000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port},http://localhost:${port}`);
 });
+

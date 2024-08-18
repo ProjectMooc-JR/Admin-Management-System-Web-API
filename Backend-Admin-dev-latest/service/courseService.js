@@ -50,13 +50,13 @@ const addCourse = async (course) => {
 
 // Update a course based on the course ID and the updated course data
 const updateCourse = async (courseId, updatedCourse) => {
-  const { CourseName, Description, CategoryID, Cover } = updatedCourse;
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } = updatedCourse;
   const query = `
-        UPDATE Courses 
-        SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ? 
-        WHERE ID = ?
-    `;
-  const values = [CourseName, Description, CategoryID, Cover, courseId];
+    UPDATE Courses 
+    SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ? 
+    WHERE ID = ?`;
+
+  const values = [CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, courseId];
 
   try {
     const [result] = await db.query(query, values);
@@ -66,23 +66,14 @@ const updateCourse = async (courseId, updatedCourse) => {
   }
 };
 
-//Delete course
-/**
- * @param {number} courseId - The ID of the course to delete
- * @returns {Promise<void>}
- */
-const deleteCourse = async (courseId) => {
-  const query = "DELETE FROM Courses WHERE ID = ?";
-
-  try {
-    const [result] = await db.query(query, [courseId]);
-    if (result.affectedRows === 0) {
-      throw new Error("Course not found");
+//Delete course by ID
+const deleteCourseByIdAsync = async (courseId) => {
+    const sql = "DELETE FROM Courses WHERE ID=?";
+    const result = await db.query(sql, [courseId]);
+    if (result.affectedRows > 0) {
+        return { isSuccess: true, message: "Course deleted successfully" };
     }
-    return result;
-  } catch (error) {
-    throw new Error(`Error deleting course: ${error.message}`);
-  }
+    return { isSuccess: false, message: "Failed to delete course" };
 };
 
 // Get all courses
@@ -98,23 +89,25 @@ const getAllCourses = async () => {
 
 //Get course by ID
 const getCourseById = async (courseId) => {
-  const query = "SELECT * FROM Courses WHERE ID = ?";
-  try {
-    const [rows] = await db.query(query, [courseId]);
-    if (rows.length === 0) {
-      throw new Error("Course not found");
+    const query = "SELECT * FROM courses WHERE ID = ?";
+    try {
+        const rows = await db.query(query, [courseId]);
+        
+        if (rows.length > 0) {
+            return { isSuccess: true, data: rows[0], message: "" };
+        } else {
+            return { isSuccess: false, message: "Course not found", data: {} };
+        }
+    } catch (error) {
+        throw new Error(`Error fetching course: ${error.message}`);
     }
-    return rows[0];
-  } catch (error) {
-    throw new Error(`Error fetching course: ${error.message}`);
-  }
 };
 
 module.exports = {
   addCourse,
   getTeacherIdByUserId,
   updateCourse,
-  deleteCourse,
+  deleteCourseByIdAsync,
   getAllCourses,
   getCourseById,
 };
