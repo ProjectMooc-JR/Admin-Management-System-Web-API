@@ -18,6 +18,7 @@ var usercontroller = require("../controller/usercontroller");
  *     description: add user
  *     security:
  *       - BearerAuth: []
+ *     
  *     responses:
  *      200:
  *        description: Fetched Successfully
@@ -42,11 +43,129 @@ var usercontroller = require("../controller/usercontroller");
  
 
 //delete
-
-//search by Id
-
+/**
+ * @openapi
+ * '/api/users/{ids}':
+ *  delete:
+ *     tags:
+ *     - User Controller
+ *     summary: delete a user by Id
+ *     security:
+ *      - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the user
+ *        required: true
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+ router.delete(
+  "/:ids",
+  param([param("ids").notEmpty().withMessage("Invalid User id")]),
+  usercontroller.deleteUserByIdAsync
+);
+//search by name
+/**
+ * @openapi
+ * '/api/users/getUser':
+ *  get:
+ *     tags:
+ *     - User Controller
+ *     summary: Get a user by name
+ *     security:
+ *      - BearerAuth: []
+ *     parameters:
+ *      - name: username
+ *       in: query
+ *       description: The name of the user
+ *       required: true
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+ router.get(
+  "/getUser",
+  commonValidate([
+    query("username").notEmpty().withMessage("Not a valid username"),
+  ]),
+  usercontroller.getUserAsync
+);
 
 //update
+/**
+  * @openapi
+ * '/api/users/{id}':
+ *  put:
+ *     tags:
+ *     - User Controller
+ *     summary: Update user info by id
+ *     security:
+ *      - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The ID of the user which need to be updated
+ *        required: true
+ *        schema:
+ *          type: integer
+ *     requestBody:
+ *       description: The data required to update the user
+ *       required: true
+ *     content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              username:
+ *                type: string
+ *              email:
+ *                type: string
+ *              address:
+ *                type: string
+ *              age:
+ *                type: integer
+ *              gender:
+ *                type: integer
+ *              avatar:
+ *                type: string
+ *                example: url-to-avatar
+ *              nickname:
+ *                type: string
+ *              access:
+ *                type: integer
+ *              active:
+ *                type: integer
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+
 
 
 
