@@ -3,6 +3,7 @@ const router = express.Router();
 const courseController = require('../controller/courseController'); // Import the course controller
 const { commonValidate } = require('../middleware/expressValidator'); // Import the validation middleware
 const { check } = require('express-validator'); // Import the check function for validation
+const { param } = require('express-validator');
 
 
 
@@ -58,9 +59,8 @@ const courseValidationRules = [
  *         description: Internal server error
  */
 router.post('/', commonValidate(courseValidationRules), courseController.createCourse);
-router.put('/courses/:courseId', commonValidate(courseValidationRules), courseController.updateCourse);
-router.delete('/courses/:courseId', commonValidate(courseValidationRules), courseController.deleteCourse);
-router.get('/', courseController.getAllCourses);
+router.put('/:courseId', commonValidate(courseValidationRules), courseController.updateCourse);
+router.delete('/:courseId', courseController.deleteCourseByIdAsync);
 router.get('/:courseId', courseController.getCourseById);
 
 module.exports = router;

@@ -1,30 +1,27 @@
-const express = require('express');
-const { addChapter } = require('../controller/chapterController');
-const { checkAdminOrTeacher } = require('../controller/authcontroller');
-const { commonValidate } = require('../middleware/expressValidator');
+const express = require("express");
+const chapterController = require("../controller/chapterController");
 const router = express.Router();
 
-router.post('/:courseId/chapters', commonValidate(/**/), addChapter);
 
-/**
- * @openapi
- * /api/chapters:
- *   get:
- *     tags:
-<<<<<<< HEAD
- *       - Chapter Controller
-=======
- *       - Chapter
->>>>>>> dev
- *     summary: 获取所有章节
- *     description: 获取章节列表
- *     responses:
- *       200:
- *         description: 成功获取章节列表
- *       500:
- *         description: 服务器错误
- */
-// router.get('/', getAllChapters);
+// Define routes for chapters
+router.post("/courses/:courseId/chapters", chapterController.addChapterAsync);
+
+// get chapters by course id
+router.get("/courses/:courseId/chapters", chapterController.getAllChaptersByCourseIdAsync);
+
+// get chapter by id
+router.get("/courses/:courseId/chapters/:chapterId", chapterController.getChapterByIdAsync);
+
+// update chapter by id
+router.put("/courses/:courseId/chapters/:chapterId", chapterController.updateChapterAsync);
+
+// delete chapter by id
+router.delete("/courses/:courseId/chapters/:chapterId", chapterController.deleteChapterByIdAsync);
+
+
+// Progress tracking
+router.put("/courses/:courseId/chapters/:chapterId/complete", chapterController.markChapterAsCompletedAsync);
 
 
 module.exports = router;
+
