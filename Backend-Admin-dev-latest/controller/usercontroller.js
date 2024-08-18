@@ -93,48 +93,49 @@ const getUserAsync = async (req, res) => {
 //   }
 // };
 
-// const deUserByIdAsync = async (req, res) => {
-//   let ids = req.params.ids;
-//   let result = await userservice.delUserByIdAsync(ids);
-//   if (result.isSuccess) {
-//     res.sendCommonValue({}, "success", 1);
-//   } else {
-//     res.sendCommonValue({}, "failed", 0);
-//   }
-// };
+const deleteUserByIdAsync = async (req, res) => {
+  let ids = req.params.ids;
+  let result = await userservice.deleteUserByIdAsync(ids);
+  if (result.isSuccess) {
+    res.sendCommonValue({}, "success", 1);
+  } else {
+    res.sendCommonValue({}, "failed", 0);
+  }
+};
 
-// const updateUserAsync = async (req, res) => {
-//   //check username not in db
-//   let user = {};
-//   user.id = parseInt(req.params.id);
-//   user.username = req.body.username;
-//   user.email = req.body.email;
-//   user.address = req.body.address;
-//   user.age = req.body.age;
-//   user.gender = req.body.gender;
-//   user.avatar = req.body.avatar;
-//   user.access = req.body.access;
-
-  // let checkUserResult = await userservice.checkUserNameAsync(
-  //   // user.username,
-  //   user.id
-  // );
-  // if (!checkUserResult.isSuccess) {
-  //   res.sendCommonValue({}, "Username and User ID do not exists", 400, 400);
-  //   return;
-  // }
-//   if (!Number.isInteger(user.id)) {
-//     res.status(400).send({ message: "Invalid user ID" });
-//     return;
-//   }
-//   let dbResult = await userservice.uptUserByIdAsync(user);
-//   if (dbResult.isSuccess) {
-//     res.sendCommonValue(user, "Updated user succeed", 1);
-//     return;
-//   } else {
-//     res.sendCommonValue({}, "", 0);
-//   }
-// };
+const updateUserAsync = async (req, res) => {
+  //check username not in db
+  let user = {};
+  user.id = parseInt(req.params.id);
+  user.username = req.body.username;
+  user.email = req.body.email;
+  user.address = req.body.address;
+  user.age = req.body.age;
+  user.gender = req.body.gender;
+  user.avatar = req.body.avatar;
+  user.access = req.body.access;
+  user.active = req.body.active;
+  
+  let checkUserResult = await userservice.checkUserNameAsync(
+    // user.username,
+    user.id
+  );
+  if (!checkUserResult.isSuccess) {
+    res.sendCommonValue({}, "Username and User ID do not exists", 400, 400);
+    return;
+  }
+  if (!Number.isInteger(user.id)) {
+    res.status(400).send({ message: "Invalid user ID" });
+    return;
+  }
+  let dbResult = await userservice.uptUserByIdAsync(user);
+  if (dbResult.isSuccess) {
+    res.sendCommonValue(user, "Updated user succeed", 1);
+    return;
+  } else {
+    res.sendCommonValue({}, "", 0);
+  }
+};
 
 // const updatePasswordAsync = async (req, res) => {
 //   const userId = parseInt(req.params.id);
@@ -154,7 +155,7 @@ const getUserAsync = async (req, res) => {
 //   }
 // };
 
-// const getUserByIdAsync = async (req, res) => {
+//const getUserByIdAsync = async (req, res) => {
 //   let id = parseInt(req.query.id);
 //   let result = await userservice.getUserbyIdAsync(id);
 //   if (result.isSuccess) {
@@ -167,9 +168,9 @@ const getUserAsync = async (req, res) => {
 module.exports = {
   addUserAsync,
   getUserAsync,
+  deleteUserByIdAsync,
   //getUserListAsync,
-  //deUserByIdAsync,
-  //updateUserAsync,
+  updateUserAsync,
   //getUserByIdAsync,
   //getUserListByAccessAsync,
   //updatePasswordAsync
