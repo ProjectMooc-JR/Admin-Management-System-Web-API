@@ -12,7 +12,7 @@ var authcontroller = require("../controller/authcontroller");
 * '/api/auth/login':
 *  post:
 *     tags:
-*     - Auth Controller
+*     - Auth
 *     summary: Login as a user return token
 *     description: login success get token
 *     requestBody:
