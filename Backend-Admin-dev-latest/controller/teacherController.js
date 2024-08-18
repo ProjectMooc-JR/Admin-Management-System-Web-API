@@ -29,14 +29,31 @@ const addTeacherAsync = async (req, res) => {
 
 // 获取所有教师信息
 const getAllTeachersAsync = async (req, res) => {
-  // 调用 teacherService 的 getAllTeachersAsync 函数获取所有教师信息：
-  const result = await teacherService.getAllTeachersAsync();
-  // 返还所有教师信息给客户端：
-  res.sendCommonValue(
-    result.data,
-    result.message,
-    result.isSuccess ? 200 : 400
-  );
+  // obtain pagination parameters from query
+  const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
+  const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
+
+  try {
+    // call getAllTeachersAsync from service layer and pass in the pagination params
+    const result = await teacherService.getAllTeachersAsync(page, pageSize);
+    // return the result obtained from service layer to front end
+    res.sendCommonValue(
+      {
+        items: result.data.items,
+        result: result.data.total,
+        page,
+        pageSize,
+      },
+      result.message,
+      result.isSuccess ? 200 : 400
+    );
+  } catch (error) {
+    console.error("Error occurred in getAllTeachersAsync:", error);
+    res.status(500).send({
+      message: "Error occurred while fetching teachers' information",
+      error: error.message,
+    });
+  }
 };
 
 // 根据ID获取教师信息
@@ -54,17 +71,15 @@ const getTeacherByIdAsync = async (req, res) => {
 const updateTeacherAsync = async (req, res) => {
   let teacher = {};
   teacher.id = parseInt(req.params.id);
-  teacher.specialization = req.body.specialization;
-  teacher.description = req.body.description;
-  teacher.hireDate = req.body.hireDate;
-  teacher.hireStatus = req.body.hireStatus === "true";
+  //teacher.User_id = parseInt(req.body.User_id);
+  teacher.Specialization = req.body.Specialization;
+  teacher.Description = req.body.Description;
+  teacher.HireDate = req.body.HireDate;
+  //teacher.HireStatus = parseInt(req.body.HireStatus);
 
-  // 检查教师的ID是否是有效的整数，如果不是有效的整数的话返回400错误
-  if (!Number.isInteger(teacher.id)) {
-    res.status(400).send({ message: "Invalid teacher ID" });
-    return;
-  }
+  teacher.HireStatus = req.body.HireStatus === "true";
 
+  console.log("updateTeacherAsync before await", teacher);
   let result = await teacherService.updateTeacherAsync(teacher);
   if (result.isSuccess) {
     res.sendCommonValue({}, "Teacher updated successfully", 200);
