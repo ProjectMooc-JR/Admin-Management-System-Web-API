@@ -1,11 +1,47 @@
 const { db } = require("../db/mysqldb.js");
 
-// 从服务器中获取所有教师
-const getAllTeachersAsync = async () => {
-  // 定义拿取所有teacher数据的sql语句
-  let sql = "select * from teachers";
-  let result = await db.query(sql);
-  return { isSuccess: true, message: "", data: result[0] };
+// Fetch all teachers' information from database and slipt into pages
+const getAllTeachersAsync = async (page, pageSize) => {
+  // define a SQL script to count the total number of teachers in database
+  let countSql = "SELECT count(*) total FROM teachers;";
+  let [resultCount] = await db.query(countSql);
+  // extract the total number of teachers from the query result
+  let total = resultCount[0].total;
+  // if the total number of teachers is 0, return an empty list with a total of 0
+  if (total == 0) {
+    return { isSuccess: true, message: "", data: { items: [], total: 0 } };
+  }
+  // Define the SQL script to receive teachers' data with pagination using LIMIT and OFFSET ← they are SQL script rules
+  let sql = "SELECT * FROM teachers LIMIT ? OFFSET ?;";
+  // execute the pagination query and store the result in resultData
+  // eg: p1:id=1 ~ id=10
+  let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
+  let teacherList = [];
+  // if search result (object) of teachers is not null, forEach them and assign values from database to the properties of object
+  if (resultData[0].length > 0) {
+    console.log("resultData[0].length > 0 resultData[0].length > 0");
+    console.log("resultData[0]", resultData[0]);
+
+    resultData[0].forEach((field) => {
+      let teacher = { id: 0 };
+
+      teacher.id = field.ID;
+      teacher.User_id = field.User_id;
+      teacher.Specialization = field.Specialization;
+      teacher.Description = field.Description;
+      teacher.HireDate = field.HireDate;
+      teacher.HireStatus = field.HireStatus;
+
+      // push teacher object which is filled by query information to the previous empty teacher array
+      teacherList.push(teacher);
+    });
+  }
+  // Return the result object containing the list of teachers and the total count, along with a success flag
+  return {
+    isSuccess: true,
+    message: "",
+    data: { items: teacherList, total: total },
+  };
 };
 
 // Get teachers' information by ID
@@ -45,14 +81,16 @@ const addTeacherAsync = async (teacher) => {
 // 更新教师
 const updateTeacherAsync = async (teacher) => {
   let sql =
-    "update teachers SET Specialization=?, Description=?, HireDate=?, HireStatus=? where id=?";
-  let result = await db.query(sql, [
+    "update teachers SET User_id = ?, Specialization=?, Description=?, HireDate=?, HireStatus=? where id=?";
+  let [result] = await db.query(sql, [
+    teacher.User_id,
     teacher.Specialization,
     teacher.Description,
     teacher.HireDate,
-    teacher.HireStatus ? 1 : 0,
+    teacher.HireStatus,
     teacher.id,
   ]);
+  console.log("updateTeacherAsync result", result);
   if (result.affectedRows > 0) {
     return { isSuccess: true, message: "Teacher updated successfully" };
   }
