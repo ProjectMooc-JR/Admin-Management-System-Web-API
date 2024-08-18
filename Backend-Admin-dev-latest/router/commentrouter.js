@@ -57,7 +57,7 @@ router.get(
 
 /**
  * @openapi
- * '/api/comments/get/{id}':
+ * '/api/comments/{id}':
  *  get:
  *     tags:
  *     - Comments Controller
@@ -82,11 +82,11 @@ router.get(
  *        description: Server Error
  */
 router.get(
-  "/get/:id",
+  "/:id",
   commonValidate([
     param("id")
       .notEmpty()
-      .isInt({ allow_leading_zeroes: false, min: 1 })
+      .isInt({ allow_leading_zeroes: false })
       .withMessage("Not a valid id"),
   ]),
   commentcontroller.getCommentByIdAsync
@@ -131,33 +131,39 @@ router.delete(
 
 /**
  * @openapi
- * '/api/comments/add':
+ * '/api/comments/':
  *  post:
  *     tags:
  *     - Comments Controller
  *     summary: create a comment
  *     security:
  *       - BearerAuth: []
- *     parameters:
- *       - in: body
- *         name: comment
- *         description: create a comment
- *         schema:
- *           type: object 
- *           required:
- *            - CourseID
- *            - CommentContent
- *            - CommentTime
- *            - UserID
- *           properties:
- *              CourseID:
- *                type: integer
- *              CommentContent:
- *                type: string
- *              CommentTime:
- *                type: DATE
- *              UserID:
- *                type: integer 
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties: 
+ *               CourseID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the course
+ *                 example: 10
+ *               CommentContent:
+ *                 type: string
+ *                 required: false
+ *                 description: content of the comment
+ *                 example: "This is a comment"
+ *               CommentTime:
+ *                 type: date-time
+ *                 required: false
+ *                 description: time of the comment
+ *                 example: "2021-09-01"
+ *               UserID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the user
+ *                 example: 1
  *     responses:
  *      201:
  *        description: Created Successfully
@@ -171,53 +177,120 @@ router.delete(
  *        description: Server Error
  */
 router.post(
-    "/add",
+    "/",
     commonValidate([
       body("CourseID")
-        .notEmpty()
-        .isInt({ allow_leading_zeroes: false, min: 1 })
+        
+        .isInt({ allow_leading_zeroes: false})
         .withMessage("Not a valid CourseID"),
       body("CommentContent")
-        .notEmpty()
+        .optional()
         .isString()
         .withMessage("Not a valid CommentContent"),
       body("CommentTime")
-        .notEmpty()
+        .optional()
         .isDate()
         .withMessage("Not a valid CommentTime"),
       body("UserID")
-        .notEmpty()
+        
         .isInt({ allow_leading_zeroes: false, min: 1 })
         .withMessage("Not a valid UserID"),
     ]),
     commentcontroller.addCommentAsync
 );
 
-// router.post(
-//     "/update",
-//     commonValidate([
-//       body("CommentID")
-//         .notEmpty()
-//         .isInt({ allow_leading_zeroes: false, min: 1 })
-//         .withMessage("Not a valid CommentID"),
-//       body("CourseID")
-//         .notEmpty()
-//         .isInt({ allow_leading_zeroes: false, min: 1 })
-//         .withMessage("Not a valid CourseID"),
-//       body("CommentContent")
-//         .notEmpty()
-//         .isString()
-//         .withMessage("Not a valid CommentContent"),
-//       body("CommentTime")
-//         .notEmpty()
-//         .isString()
-//         .withMessage("Not a valid CommentTime"),
-//       body("UserID")
-//         .notEmpty()
-//         .isInt({ allow_leading_zeroes: false, min: 1 })
-//         .withMessage("Not a valid UserID"),
-//     ]),
-//     commentcontroller.updateCommentAsync
+
+/**
+ * @openapi
+ * '/api/comments/{id}':
+ *  put:
+ *     tags:
+ *     - Comments Controller
+ *     summary: Update a comment
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: ID of comment
+ *        required: true
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: 
+ *             type: object
+ *             properties: 
+ *               CourseID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the course
+ *                 example: 10
+ *               CommentContent:
+ *                 type: string
+ *                 required: false
+ *                 description: content of the comment
+ *                 example: "This is a comment"
+ *               CommentTime:
+ *                 type: date-time
+ *                 required: false
+ *                 description: time of the comment
+ *                 example: "2021-09-01"
+ *               UserID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the user
+ *                 example: 1
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
+ */
+router.put(
+  "/:id",
+  commonValidate([
+    param("id")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false })
+      .withMessage("Invalid ID"),
+    body("CourseID")
+      .notEmpty()
+      .withMessage("CourseID is required"),
+    body("CommentContent")
+      .optional()
+      .notEmpty()
+      .withMessage("CommentContent is required"),
+    body("CommentTime").optional().isDate().withMessage("Invalid CommentTime"),
+    body("UserID").isInt().withMessage("Invalid UserID"),  
+  ]),
+  commentcontroller.updateCommentAsync
+);
+
+// router.put(
+//   "/:id",
+//   commonValidate([
+//     param("id")
+//       .notEmpty()
+//       .isInt({ allow_leading_zeroes: false })
+//       .withMessage("Invalid teacher ID"),
+//     body("specialization")
+//       .optional()
+//       .notEmpty()
+//       .withMessage("Specialization is required"),
+//     body("description")
+//       .optional()
+//       .notEmpty()
+//       .withMessage("Description is required"),
+//     body("hireDate").optional().isDate().withMessage("Invalid HireDate"),
+//     body("hireStatus").optional().isBoolean().withMessage("Invalid HireStatus"),
+//   ]),
+//   teacherController.updateTeacherAsync
 // );
 
 
