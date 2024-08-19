@@ -77,8 +77,8 @@ const authrouter = require("./router/authrouter");
 app.use("/api/auth", authrouter);
 
 // //config userrouter
-// const userrouter = require("./router/userrouter");
-// app.use("/api/users", userrouter);
+const userrouter = require("./router/userrouter");
+app.use("/api/users", userrouter);
 
 //config commentrouter
 const commentrouter = require("./router/commentrouter");
