@@ -99,6 +99,10 @@ app.use('/api', chapterRoutes);
 // const courseScheduleRouter = require("./router/courseScheduleRouter");
 // app.use("/api/courseSchedule", courseScheduleRouter);
 
+//config courseCategoryRouter
+const courseCategoryRouter =require("./router/courseCategoryRouter");
+app.use("/api/courseCategory",courseCategoryRouter)
+
 //config erorhandle
 const erorhandle = require("./middleware/errorhandling");
 app.use(erorhandle.errorhandling);
