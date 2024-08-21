@@ -83,7 +83,6 @@ app.use("/api/users", userrouter);
 //config commentrouter
 const commentrouter = require("./router/commentrouter");
 app.use("/api/comments", commentrouter);
-
 //config teacherrouter
 const teacherRouter = require("./router/teacherrouter");
 app.use("/api/teachers", teacherRouter);
