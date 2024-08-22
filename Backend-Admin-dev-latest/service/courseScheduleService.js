@@ -13,11 +13,32 @@ const getCourseScheduleById = async (id) => {
 };
 
 const addCourseSchedule = async (courseScheduleData) => {
-  const { id, startDate, endDate, isPublished } = courseScheduleData;
-  let sql =
-    "INSERT INTO courseschedule (id, startDate, endDate, isPublished) VALUES (?, ?, ?, ?)";
-  let result = await db.query(sql, [id, startDate, endDate, isPublished]);
-  return result[0].insertId;
+  try {
+    console.log(courseScheduleData);
+    let { courseId, startDate, endDate, isPublished } = courseScheduleData;
+    const formattedStartDate = new Date(startDate)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+    const formattedEndDate = new Date(endDate)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+
+    isPublished = isPublished ? true : false;
+
+    let sql =
+      "INSERT INTO courseschedule (CourseID, StartDate, EndDate, IsPublished) VALUES (?, ?, ?, ?)";
+    let result = await db.query(sql, [
+      courseId,
+      formattedStartDate,
+      formattedEndDate,
+      isPublished,
+    ]);
+    return result[0].insertId;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const deleteCourseSchedule = async (id) => {
