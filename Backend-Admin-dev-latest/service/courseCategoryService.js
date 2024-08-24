@@ -24,8 +24,8 @@ const updateCourseCategoryAsync = async (courseCategory) => {
 
   const selectSql = "SELECT * FROM coursecategories WHERE ID = ?;";
   const updateSql = `UPDATE coursecategories 
-                     SET CategoryName = ?, Level = ?, ParentID = ?, Notes = ?, version = version + 1 
-                     WHERE ID = ? AND version = ?;`;
+                     SET CategoryName = ?, Level = ?, ParentID = ?, Notes = ?
+                     WHERE ID = ?`;
   const connection = await db.getConnection();
 
   try {
@@ -35,13 +35,12 @@ const updateCourseCategoryAsync = async (courseCategory) => {
       await connection.rollback(); 
       return { isSuccess: false, msg: "course category not exist", data: null };
     }
-    const currentVersion = rows[0].version;
-    const values = [CategoryName, Level, ParentID, Notes, id, currentVersion];
+    const values = [CategoryName, Level, ParentID, Notes, id];
 
     const [updateResult] = await db.query(updateSql, values);
     if (updateResult.affectedRows !== 1) {
       await connection.rollback(); 
-      return { isSuccess: false, msg: "update failed due to version conflict", data: null };
+      return { isSuccess: false, msg: "update failed", data: null };
     }
     const [updatedRows] = await db.query(selectSql, [id]);
     await connection.commit(); 
