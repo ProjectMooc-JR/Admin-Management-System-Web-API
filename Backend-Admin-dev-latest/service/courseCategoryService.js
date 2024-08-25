@@ -29,27 +29,27 @@ const updateCourseCategoryAsync = async (courseCategory) => {
   const connection = await db.getConnection();
 
   try {
-    await connection.beginTransaction(); 
+    await connection.beginTransaction();
     const [rows] = await db.query(selectSql, [id]);
     if (rows.length === 0) {
-      await connection.rollback(); 
+      await connection.rollback();
       return { isSuccess: false, msg: "course category not exist", data: null };
     }
     const values = [CategoryName, Level, ParentID, Notes, id];
 
     const [updateResult] = await db.query(updateSql, values);
     if (updateResult.affectedRows !== 1) {
-      await connection.rollback(); 
+      await connection.rollback();
       return { isSuccess: false, msg: "update failed", data: null };
     }
     const [updatedRows] = await db.query(selectSql, [id]);
-    await connection.commit(); 
+    await connection.commit();
     return { isSuccess: true, msg: "update successfully", data: updatedRows };
   } catch (error) {
-    await connection.rollback(); 
+    await connection.rollback();
     return { isSuccess: false, msg: error.message, data: null };
   } finally {
-    connection.release(); 
+    connection.release();
   }
 };
 //delete course category by id
@@ -82,14 +82,39 @@ const deleteCourseCategoryByIdAsync = async (courseCategoryId) => {
   }
 };
 // get all course category
-const getAllCourseCategoryAsync = async () => {
-  const sql = "SELECT * FROM coursecategories";
+const getAllCourseCategoryAsync = async (page, pageSize) => {
+  const count = "SELECT count(*) total FROM coursecategories";
+  let sql = "SELECT * FROM coursecategories limit ? offset ? ;";
   try {
-    const [result] = await db.query(sql);
-    return { isSuccess: true, msg: "query successfully", data: result };
+    let resultCount = await db.query(count);
+    let total = resultCount[0][0].total;
+    if (total == 0) {
+      return { isSuccess: true, message: "", data: { items: [], total: 0 } };
+    }
+    let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
+    console.log(resultData)
+    let courseCategoriesList = [];
+    if (resultData[0].length > 0) {
+      resultData[0].forEach((element) => {
+        let courseCategory = { id: 0 };
+        courseCategory.id = element.ID;
+        courseCategory.categoryName = element.CategoryName;
+        courseCategory.Level = element.Level;
+        courseCategory.ParentID = element.ParentID;
+        courseCategory.Notes = element.Notes;
+        courseCategoriesList.push(courseCategory);
+      });
+    }
+    return {
+      isSuccess: true,
+      message: "",
+      data: { items: courseCategoriesList, total: total },
+    };
   } catch (error) {
-    throw new Error(`Error fetching courses: ${error.message}`);
+    throw new Error(`Error fetching course category: ${error.message}`);
+
   }
+
 };
 // get course category by id
 const getCourseCategoryById = async (courseId) => {

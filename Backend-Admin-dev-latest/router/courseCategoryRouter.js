@@ -122,15 +122,33 @@ const { check, body, param } = require('express-validator');
 
 /**
 * @openapi
-* '/api/course-category':
+* '/api/course-category/{page}/{pageSize}':
 *  get:
-*     tags:
-*     - Course Category
-*     summary: Get all course categories
-*     description: Retrieves a list of all course categories.
-*     responses:
-*      200:
-*        description: A list of all course categories
+ *     tags:
+ *     - Course Category
+ *     summary: Get all course categories
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: page
+ *        in: path
+ *        description: page
+ *        required: true
+ *      - name: pageSize
+ *        in: path
+ *        description: pageSize
+ *        required: true
+ *     responses:
+ *      200:
+ *        description: Fetched Successfully
+ *      400:
+ *        description: Bad Request
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Not Found
+ *      500:
+ *        description: Server Error
 */
 
 router.post('/', commonValidate([
@@ -156,7 +174,16 @@ router.get("/:courseCategoryId", commonValidate([
     param("courseCategoryId").notEmpty().withMessage("courseCategoryId is required"),
 ]), courseCategoryController.getCourseCategoryByIdAsync)
 
-router.get("/", courseCategoryController.getAllCourseCategoryAsync)
+router.get("/:page/:pageSize",commonValidate([
+    param("page")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false, min: 1 })
+      .withMessage("Not a valid page"),
+    param("pageSize")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false, min: 1 })
+      .withMessage("Not a valid page"),
+]), courseCategoryController.getAllCourseCategoryAsync)
 
 
 module.exports = router

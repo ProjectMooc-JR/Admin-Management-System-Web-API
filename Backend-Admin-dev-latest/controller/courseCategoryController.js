@@ -16,7 +16,10 @@ const addCourseCategoryAsync = async (req, res) => {
 };
 
 const getAllCourseCategoryAsync = async (req, res) => {
-  const result = await courseCategoryService.getAllCourseCategoryAsync();
+  let page = parseInt(req.params.page);
+  let pageSize = parseInt(req.params.pageSize);
+  console.log(page)
+  const result = await courseCategoryService.getAllCourseCategoryAsync(page,pageSize);
   res.sendCommonValue(
     result.data,
     result.msg,
