@@ -6,8 +6,94 @@ const { body, query, param } = require("express-validator");
 const { commonValidate } = require("../middleware/expressValidator");
 
 const teacherController = require("../controller/teacherController");
+//===============================================================================================//
 
+// router of fetching all teachers' information with pagination
+
+/**
+ * @openapi
+ * '/api/teachers/{page}/{pageSize}':
+ *  get:
+ *     tags:
+ *     - Teacher Controller
+ *     summary: Get all teachers with pagination
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: page
+ *        in: path
+ *        description: Page number
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      - name: pageSize
+ *        in: path
+ *        description: Number of teachers per page
+ *        required: true
+ *        schema:
+ *          type: integer
+ *     responses:
+ *      200:
+ *        description: Fetched successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
+
+router.get(
+  "/:page/:pageSize",
+  commonValidate([
+    param("page")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false, min: 1 })
+      .withMessage("Not a valid page"),
+    param("pageSize")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false, min: 1 })
+      .withMessage("Not a valid page"),
+  ]),
+  teacherController.getAllTeachersAsync
+);
+
+//===============================================================================================//
 // 添加教师信息的router：
+
+/**
+ * @openapi
+ * '/api/teachers':
+ *  post:
+ *     tags:
+ *     - Teacher Controller
+ *     summary: Add a new teacher
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               User_id:
+ *                 type: integer
+ *               Specialization:
+ *                 type: string
+ *               Description:
+ *                 type: string
+ *               HireDate:
+ *                 type: string
+ *                 format: date
+ *               HireStatus:
+ *                 type: boolean
+ *     responses:
+ *      201:
+ *        description: Teacher added successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
 router.post(
   "/",
   commonValidate([
@@ -20,30 +106,36 @@ router.post(
   teacherController.addTeacherAsync
 );
 
+//===============================================================================================//
+// 根据ID获取教师信息的router：
+
 /**
  * @openapi
- * '/api/teachers':
+ * '/api/teachers/{id}':
  *  get:
  *     tags:
- *     - teacher
- *     summary: Get all teachers
+ *     - Teacher Controller
+ *     summary: Get teacher by ID
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: Teacher ID
+ *        required: true
+ *        schema:
+ *          type: integer
  *     responses:
  *      200:
- *        description: Fetched Successfully
+ *        description: Teacher data fetched successfully
  *      400:
  *        description: Bad Request
- *      401:
- *        description: Unauthorized
  *      404:
  *        description: Not Found
  *      500:
  *        description: Server Error
  */
-router.get("/", teacherController.getAllTeachersAsync);
 
-// 根据ID获取教师信息的router：
 router.get(
   "/:id",
   commonValidate([
@@ -55,7 +147,50 @@ router.get(
   teacherController.getTeacherByIdAsync
 );
 
+//===============================================================================================//
 // 根据ID更新教师信息的router：
+
+/**
+ * @openapi
+ * '/api/teachers/{id}':
+ *  put:
+ *     tags:
+ *     - Teacher Controller
+ *     summary: Update teacher information
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: Teacher ID
+ *        required: true
+ *        schema:
+ *          type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               Specialization:
+ *                 type: string
+ *               Description:
+ *                 type: string
+ *               HireDate:
+ *                 type: string
+ *                 format: date
+ *               HireStatus:
+ *                 type: boolean
+ *     responses:
+ *      200:
+ *        description: Teacher updated successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
+
 router.put(
   "/:id",
   commonValidate([
@@ -63,21 +198,48 @@ router.put(
       .notEmpty()
       .isInt({ allow_leading_zeroes: false })
       .withMessage("Invalid teacher ID"),
-    body("specialization")
+    body("Specialization")
       .optional()
       .notEmpty()
       .withMessage("Specialization is required"),
-    body("description")
+    body("Description")
       .optional()
       .notEmpty()
       .withMessage("Description is required"),
-    body("hireDate").optional().isDate().withMessage("Invalid HireDate"),
-    body("hireStatus").optional().isBoolean().withMessage("Invalid HireStatus"),
+    body("HireDate").optional().isDate().withMessage("Invalid HireDate"),
+    body("HireStatus").optional().isBoolean().withMessage("Invalid HireStatus"),
   ]),
   teacherController.updateTeacherAsync
 );
 
+//===============================================================================================//
 // 根据ID删除教师信息的router：
+
+/**
+ * @openapi
+ * '/api/teachers/{id}':
+ *  delete:
+ *     tags:
+ *     - Teacher Controller
+ *     summary: Delete a teacher by ID
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: Teacher ID
+ *        required: true
+ *        schema:
+ *          type: integer
+ *     responses:
+ *      200:
+ *        description: Teacher deleted successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
+
 router.delete(
   "/:id",
   commonValidate([

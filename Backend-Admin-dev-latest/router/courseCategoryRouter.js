@@ -7,44 +7,6 @@ const { check, body, param } = require('express-validator');
 
 /**
 * @openapi
-* '/api/course-category':
-*  post:
-*     tags:
-*     - Course Category
-*     summary: Add a new course category
-*     description: Creates a new course category with the provided details.
-*     requestBody:
-*      required: true
-*      content:
-*        application/json:
-*           schema:
-*            type: object
-*            required:
-*              - CategoryName
-*              - Level
-*              - ParentID
-*            properties:
-*              CategoryName:
-*                type: string
-*                example: Science
-*              Level:
-*                type: string
-*                example: Beginner
-*              ParentID:
-*                type: string
-*                example: 123
-*              Notes:
-*                type: string
-*                example: This is a science course category
-*     responses:
-*      201:
-*        description: Course category created successfully
-*      400:
-*        description: Validation error
-*/
-
-/**
-* @openapi
 * '/api/course-category/{courseCategoryId}':
 *  put:
 *     tags:
@@ -187,3 +149,4 @@ router.get("/:page/:pageSize",commonValidate([
 
 
 module.exports = router
+

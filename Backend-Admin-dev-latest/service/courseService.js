@@ -50,13 +50,22 @@ const addCourse = async (course) => {
 
 // Update a course based on the course ID and the updated course data
 const updateCourse = async (courseId, updatedCourse) => {
-  const { CourseName, Description, CategoryID, Cover } = updatedCourse;
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } =
+    updatedCourse;
   const query = `
         UPDATE Courses 
         SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ? 
         WHERE ID = ?
     `;
-  const values = [CourseName, Description, CategoryID, Cover, courseId];
+  const values = [
+    CourseName,
+    Description,
+    CategoryID,
+    Cover,
+    TeacherID,
+    PublishedAt,
+    courseId,
+  ];
 
   try {
     const [result] = await db.query(query, values);
@@ -71,19 +80,34 @@ const updateCourse = async (courseId, updatedCourse) => {
  * @param {number} courseId - The ID of the course to delete
  * @returns {Promise<void>}
  */
-const deleteCourse = async (courseId) => {
-  const query = "DELETE FROM Courses WHERE ID = ?";
 
-  try {
-    const [result] = await db.query(query, [courseId]);
-    if (result.affectedRows === 0) {
-      throw new Error("Course not found");
-    }
-    return result;
-  } catch (error) {
-    throw new Error(`Error deleting course: ${error.message}`);
-  }
+const deleteChapter = async (courseId) => {
+  const query = "DELETE FROM coursechapters WHERE CourseID = ?";
+  const [result] = await db.query(query, [courseId]);
+  return result.affectedRows > 0;
 };
+
+const deleteComments = async (courseId) => {
+  const query = "DELETE FROM coursecomments WHERE CourseID = ?";
+  const [result] = await db.query(query, [courseId]);
+  return result.affectedRows > 0;
+};
+
+const deleteCourse = async (courseId) => {
+    deleteChapter(courseId);
+    deleteComments(courseId);
+    const query = "DELETE FROM Courses WHERE ID = ?";
+
+    try {
+      const [result] = await db.query(query, [courseId]);
+      if (result.affectedRows === 0) {
+        throw new Error("Course not found");
+      }
+      return result;
+    } catch (error) {
+      throw new Error(`Error deleting course: ${error.message}`);
+    }
+  }
 
 // Get all courses
 const getAllCourses = async () => {
