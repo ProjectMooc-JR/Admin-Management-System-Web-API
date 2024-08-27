@@ -31,6 +31,8 @@ const getAllTeachersAsync = async (page, pageSize) => {
       teacher.Description = field.Description;
       teacher.HireDate = field.HireDate;
       teacher.HireStatus = field.HireStatus;
+      teacher.MobileNum = field.MobileNum;
+      teacher.LinkedInLink = field.LinkedInLink;
 
       // push teacher object which is filled by query information to the previous empty teacher array
       teacherList.push(teacher);
@@ -60,13 +62,15 @@ const getTeacherByIdAsync = async (id) => {
 // 添加教师
 const addTeacherAsync = async (teacher) => {
   let sql =
-    "insert into teachers (User_id, Specialization, Description, HireDate, HireStatus) values (?, ?, ?, ?, ?)";
+    "insert into teachers (User_id, Specialization, Description, HireDate, HireStatus, MobileNum, LinkedInLink) values (?, ?, ?, ?, ?, ?, ?)";
   let [result] = await db.query(sql, [
     teacher.User_id,
     teacher.Specialization,
     teacher.Description,
     teacher.HireDate,
     teacher.HireStatus ? 1 : 0,
+    teacher.MobileNum,
+    teacher.LinkedInLink,
   ]);
 
   console.log("DB query result:", result);
@@ -81,14 +85,16 @@ const addTeacherAsync = async (teacher) => {
 // 更新教师
 const updateTeacherAsync = async (teacher) => {
   let sql =
-    "update teachers SET Specialization=?, Description=?, HireDate=?, HireStatus=? where id=?";
+    "update teachers SET Specialization=?, Description=?, HireDate=?, HireStatus=?, MobileNum=?, LinkedInLink=? where id=?";
   let [result] = await db.query(sql, [
     //teacher.User_id,
     teacher.Specialization,
     teacher.Description,
     teacher.HireDate,
     teacher.HireStatus,
-    teacher.id,
+    teacher.MobileNum,
+    teacher.LinkedInLink,
+    teacher.id, // NOTE: id should be placed always in the last
   ]);
   console.log("updateTeacherAsync result", result);
   if (result.affectedRows > 0) {
@@ -107,10 +113,22 @@ const deleteTeacherByIdAsync = async (id) => {
   return { isSuccess: false, message: "Failed to delete teacher" };
 };
 
+// Search a specific teacher by mobile number
+const getTeacherByMobileNumAsync = async (MobileNum) => {
+  let sql = "SELECT * FROM teachers WHERE MobileNum = ?";
+  let result = await db.query(sql, [MobileNum]);
+
+  if (result[0].length > 0) {
+    return { isSuccess: true, message: "", data: result[0][0] };
+  }
+  return { isSuccess: false, message: "Teacher not found", data: {} };
+};
+
 module.exports = {
   getAllTeachersAsync,
   getTeacherByIdAsync,
   addTeacherAsync,
   updateTeacherAsync,
   deleteTeacherByIdAsync,
+  getTeacherByMobileNumAsync,
 };
