@@ -187,10 +187,6 @@ router.post(
         .optional()
         .isString()
         .withMessage("Not a valid CommentContent"),
-      body("CommentTime")
-        .optional()
-        .isDate()
-        .withMessage("Not a valid CommentTime"),
       body("UserID")
         
         .isInt({ allow_leading_zeroes: false, min: 1 })

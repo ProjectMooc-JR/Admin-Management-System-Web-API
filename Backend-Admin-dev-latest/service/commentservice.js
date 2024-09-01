@@ -14,7 +14,7 @@ var getCommentListAsync = async (page, pageSize) => {
     if (resultData[0].length > 0) {
       resultData[0].forEach((element) => {
         let comment = { ID: 0 };
-        comment.ID = element.ID;
+        comment.id = element.id;
         comment.CourseID = element.CourseID;
         comment.CommentContent = element.CommentContent;
         comment.CommentTime = element.CommentTime;
@@ -30,7 +30,7 @@ var getCommentListAsync = async (page, pageSize) => {
 };
 
 const getCommentByIdAsync = async (id) => { 
-    let sql = "SELECT * FROM coursecomments WHERE ID = ?";
+    let sql = "SELECT * FROM coursecomments WHERE id = ?";
     let resultData = await db.query(sql, [id]);
 
     if (resultData[0].length > 0) {
@@ -41,7 +41,7 @@ const getCommentByIdAsync = async (id) => {
 }
 
 const deleteCommentByIdAsync = async (id) => {
-    let sql = "DELETE FROM coursecomments WHERE ID = ?"; 
+    let sql = "DELETE FROM coursecomments WHERE id = ?"; 
     let result = await db.query(sql, [id]);
     if (result[0].affectedRows > 0) {
       return { isSuccess: true, message: "success"};
@@ -71,7 +71,7 @@ const updateCommentAsync = async (id, updatedComment) => {
   let sql = `
     UPDATE coursecomments 
     SET CourseID = ?, CommentContent = ?, CommentTime = ?,  UserID = ? 
-    WHERE ID =?
+    WHERE id =?
   `;
   const values = [CourseID, CommentContent, CommentTime, UserID, id];
   const [result] = await db.query(sql, values);
