@@ -34,10 +34,15 @@ const getAllTeachersAsync = async (req, res) => {
   // obtain pagination parameters from query
   const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
   const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
+  const includeUserData = req.query.includeUserData === "true"; // get query parameter to decide if user data should be included
 
   try {
     // call getAllTeachersAsync from service layer and pass in the pagination params
-    const result = await teacherService.getAllTeachersAsync(page, pageSize);
+    const result = await teacherService.getAllTeachersAsync(
+      page,
+      pageSize,
+      includeUserData
+    );
     // return the result obtained from service layer to front end
     res.sendCommonValue(
       {

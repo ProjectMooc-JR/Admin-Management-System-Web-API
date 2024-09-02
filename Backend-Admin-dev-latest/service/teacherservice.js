@@ -1,7 +1,7 @@
 const { db } = require("../db/mysqldb.js");
 
 // Fetch all teachers' information from database and slipt into pages
-const getAllTeachersAsync = async (page, pageSize) => {
+const getAllTeachersAsync = async (page, pageSize, includeUserData = false) => {
   // define a SQL script to count the total number of teachers in database
   let countSql = "SELECT count(*) total FROM teachers;";
   let [resultCount] = await db.query(countSql);
@@ -12,7 +12,17 @@ const getAllTeachersAsync = async (page, pageSize) => {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
   // Define the SQL script to receive teachers' data with pagination using LIMIT and OFFSET ← they are SQL script rules
-  let sql = "SELECT * FROM teachers LIMIT ? OFFSET ?;";
+  let sql;
+  if (includeUserData) {
+    sql = `
+      SELECT t.ID, t.User_id, t.Specialization, t.Description, t.HireDate, t.HireStatus, t.MobileNum, t.LinkedInLink,
+             u.username
+      FROM teachers t
+      JOIN user u ON t.User_id = u.id
+      LIMIT ? OFFSET ?;`;
+  } else {
+    sql = "SELECT * FROM teachers LIMIT ? OFFSET ?;";
+  }
   // execute the pagination query and store the result in resultData
   // eg: p1:id=1 ~ id=10
   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
@@ -23,16 +33,17 @@ const getAllTeachersAsync = async (page, pageSize) => {
     console.log("resultData[0]", resultData[0]);
 
     resultData[0].forEach((field) => {
-      let teacher = { id: 0 };
-
-      teacher.id = field.ID;
-      teacher.User_id = field.User_id;
-      teacher.Specialization = field.Specialization;
-      teacher.Description = field.Description;
-      teacher.HireDate = field.HireDate;
-      teacher.HireStatus = field.HireStatus;
-      teacher.MobileNum = field.MobileNum;
-      teacher.LinkedInLink = field.LinkedInLink;
+      let teacher = {
+        id: field.ID,
+        User_id: field.User_id,
+        Specialization: field.Specialization,
+        Description: field.Description,
+        HireDate: field.HireDate,
+        HireStatus: field.HireStatus,
+        MobileNum: field.MobileNum,
+        LinkedInLink: field.LinkedInLink,
+        username: includeUserData ? field.username : undefined,
+      };
 
       // push teacher object which is filled by query information to the previous empty teacher array
       teacherList.push(teacher);

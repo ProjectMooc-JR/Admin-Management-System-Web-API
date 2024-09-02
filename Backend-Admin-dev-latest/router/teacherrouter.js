@@ -57,7 +57,7 @@ router.get(
  *  get:
  *     tags:
  *     - Teacher Controller
- *     summary: Get all teachers with pagination
+ *     summary: Get all teachers with pagination and optional username
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -73,6 +73,12 @@ router.get(
  *        required: true
  *        schema:
  *          type: integer
+ *      - name: includeUserData
+ *        in: query
+ *        description: Include username in the response
+ *        required: false
+ *        schema:
+ *          type: boolean
  *     responses:
  *      200:
  *        description: Fetched successfully
