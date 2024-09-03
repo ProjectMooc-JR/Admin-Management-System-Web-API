@@ -7,13 +7,13 @@ var getCommentListAsync = async (page, pageSize) => {
     if (total == 0) {
       return { isSuccess: true, message: "", data: { items: [], total: 0 } };
     }
-    let sql = "SELECT * FROM coursecomments";
+    let sql = "SELECT * FROM coursecomments limit ? offset ?";
     let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
   
     let commentlist = [];
     if (resultData[0].length > 0) {
       resultData[0].forEach((element) => {
-        let comment = { id: 0 };
+        let comment = { ID: 0 };
         comment.ID = element.ID;
         comment.CourseID = element.CourseID;
         comment.CommentContent = element.CommentContent;
