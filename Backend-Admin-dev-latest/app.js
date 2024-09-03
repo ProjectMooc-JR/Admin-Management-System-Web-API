@@ -49,11 +49,11 @@ app.use(
 //config jwt
 const { jwtConfig } = require("./appConfig");
 let { expressjwt: jwt } = require("express-jwt");
-app.use(
-  jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
-    path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
-  })
-);
+// app.use(
+//   jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
+//     path: ["/", "/api-docs", "/api/auth/login", "/api/auth/loginOut", "/api/auth/register"],
+//   })
+// );
 
 app.get("/", (req, res) => {
   res.send("server running " + new Date().toLocaleString());
