@@ -1,11 +1,11 @@
-const appConfig = require('../appConfig');
+const appConfig = require("../appConfig");
 
 module.exports = {
   development: {
-    username: 'root',
+    username: "root",
     password: appConfig.mysqlConfig.password,
-    database: 'adminmanagementsystemdb',
-    host: '127.0.0.1',
-    dialect: 'mysql'
-  }
+    database: "adminmanagementsystemdb",
+    host: "127.0.0.1",
+    dialect: "mysql",
+  },
 };
