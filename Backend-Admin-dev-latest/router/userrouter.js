@@ -137,7 +137,7 @@ router.get(
 
       .withMessage("Not a valid page"),
   ]),
-  usercontroller.getUserAsync
+  usercontroller.getUserListAsync
 );
 
 
