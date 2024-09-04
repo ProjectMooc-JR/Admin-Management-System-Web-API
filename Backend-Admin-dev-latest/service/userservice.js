@@ -54,11 +54,30 @@ const deleteUserByIdAsync = async (id) => {
   return { isSuccess: false, message: "Fail to delete" };
 };
 
+const deleteUserByIdsAsync = async (ids) => {
+
+  //sql injection, don't recommend
+  //let sql = `Delete FROM user where id in (${ids})`;
+
+
+  // avoid sql injection
+  let idArray = ids.split(",")
+  let idsString = idArray.map((id) => `'${parseInt(id)}'`).join(",");
+  let sql1 = `Delete FROM user where id in (${idsString})`;
+
+  let [result] = await db.query(sql);
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "Delete successfully" };
+  }
+
+  return { isSuccess: false, message: "Fail to delete" };
+};
+
 //update
 const updateUserByIdAsync = async (user) => {
   // SQL query statement
   let sql = `UPDATE user SET username = ?, email = ?, address = ?, age = ?, gender = ?, avatar = ?, nickname = ?, access = ?,active = ? WHERE id = ?`;
-   // Executing the query
+  // Executing the query
   let result = await db.query(sql, [
     user.username,
     user.email,
@@ -69,14 +88,13 @@ const updateUserByIdAsync = async (user) => {
     user.nickname,
     user.access,
     user.active,
-    user.id // The ID should be at the end to match the WHERE clause
+    user.id, // The ID should be at the end to match the WHERE clause
   ]);
   if (result[0].affectedRows > 0) {
     return { isSuccess: true, message: "Update successful" };
   }
   return { isSuccess: false, message: "Fail to update" };
 };
-
 
 var getUserListAsync = async (page, pageSize) => {
   let countSql = "SELECT count(*) total FROM user; ";
@@ -111,11 +129,11 @@ var getUserListAsync = async (page, pageSize) => {
   };
 };
 
-
 module.exports = {
   getUserListAsync,
   getUserbyNameAsync,
   addUserAsync,
   deleteUserByIdAsync,
   updateUserByIdAsync,
+  deleteUserByIdsAsync,
 };

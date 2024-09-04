@@ -93,6 +93,16 @@ const deleteUserByIdAsync = async (req, res) => {
   }
 };
 
+const deleteUserByIdsAsync = async (req, res) => {
+  let ids = req.params.ids;
+  let result = await userservice.deleteUserByIdsAsync(ids);
+  if (result.isSuccess) {
+    res.sendCommonValue({}, "success", 1);
+  } else {
+    res.sendCommonValue({}, "failed", 0);
+  }
+};
+
 const updateUserAsync = async (req, res) => {
   //check username not in db
   let user = {};
@@ -161,6 +171,7 @@ module.exports = {
   deleteUserByIdAsync,
   getUserListAsync,
   updateUserAsync,
+  deleteUserByIdsAsync
   //getUserByIdAsync,
   //getUserListByAccessAsync,
   //updatePasswordAsync
