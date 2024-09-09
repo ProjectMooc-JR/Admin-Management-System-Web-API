@@ -42,11 +42,10 @@ const courseCategoryRule=[
  *        description: Server Error
  */
 router.post('/',courseCategoryController.addCourseCategoryAsync);
-
-
 router.put('/:courseCategoryId',courseCategoryController.updateCourseCategoryAsync);
 router.delete("/:courseCategoryId",courseCategoryController.deleteCourseCategoryByIdAsync);
 router.get("/:courseCategoryId",courseCategoryController.getCourseCategoryByIdAsync)
 router.get("/",courseCategoryController.getAllCourseCategoryAsync)
 router.get("/:page/:pageSize",courseCategoryController.getAllCourseCategoryByPageAsync)
+router.post("/mult-delete",courseCategoryController.deleteMutiCourseCategoryAsync)
 module.exports=router

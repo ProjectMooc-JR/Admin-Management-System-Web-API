@@ -129,6 +129,7 @@ const getAllCourseCategoryAsync = async () => {
     throw new Error(`Error fetching courses: ${error.message}`);
   }
 };
+
 // get course category by id
 const getCourseCategoryById = async (courseId) => {
   const sql = "SELECT * FROM coursecategories WHERE ID = ?";
@@ -163,10 +164,10 @@ const getAllCourseCategoryByPage=async(page, pageSize)=>{
       resultData[0].forEach((element) => {
         let  category = { id: 0 };
         category.id = element.ID;
-        category.username = element.CategoryName;
+        category.categoryName = element.CategoryName;
         category.level = element.Level;
         category.parentID = element.ParentID;
-        category.Notes = element.Notes;
+        category.notes = element.Notes;
         categorylist.push(category);
       });
     }
@@ -176,12 +177,20 @@ const getAllCourseCategoryByPage=async(page, pageSize)=>{
       data: { items: categorylist, total: total },
     };
   };
+const deleteCourseCategoryByBatchAsync=async(ids)=>{
+  console.log(11111,ids)
+  const idsString = ids.join(',');
+  let sql=`DELETE FROM coursecategories WHERE ID IN (${idsString});`
+  await db.query(sql)
+  return { isSuccess: true, msg: "course category delete successfully", data: null };
 
+}
 module.exports = {
   getCourseCategoryById,
   getAllCourseCategoryAsync,
   deleteCourseCategoryByIdAsync,
   addCourseCategoryAsync,
   updateCourseCategoryAsync,
-  getAllCourseCategoryByPage
+  getAllCourseCategoryByPage,
+  deleteCourseCategoryByBatchAsync
 }

@@ -69,6 +69,15 @@ const getAllCourseCategoryByPageAsync = async (req, res) => {
   );
 
 }
+const deleteMutiCourseCategoryAsync=async(req, res)=>{
+  const ids=req.body.ids
+  const result=courseCategoryService.deleteCourseCategoryByBatchAsync(ids)
+  res.sendCommonValue(
+    result.data,
+    result.msg,
+    result.isSuccess ? 200 : 400
+  )
+}
 
 module.exports = {
   addCourseCategoryAsync,
@@ -76,5 +85,6 @@ module.exports = {
   getCourseCategoryByIdAsync,
   getAllCourseCategoryByPageAsync,
   updateCourseCategoryAsync,
-  deleteCourseCategoryByIdAsync
+  deleteCourseCategoryByIdAsync,
+  deleteMutiCourseCategoryAsync
 }
