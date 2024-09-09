@@ -5,7 +5,6 @@ var router = express.Router();
 const { body, query, param } = require("express-validator");
 const { commonValidate } = require("../middleware/expressValidator");
 
-//var usercontroller = require("../controller/usercontroller");
 var commentcontroller = require("../controller/commentcontroller");
 
 /**
