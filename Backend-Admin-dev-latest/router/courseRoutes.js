@@ -14,7 +14,7 @@ const courseValidationRules = [
     // Add more validation rules as needed
 ];
 
-
+// Create a new course
 /**
  * @openapi
  * '/api/courses':
@@ -71,6 +71,7 @@ const courseValidationRules = [
  */
 router.post('/', commonValidate(courseValidationRules), courseController.createCourse);
 
+// Update a course
 /**
  * @openapi
  * '/api/courses/{courseId}':
@@ -130,6 +131,7 @@ router.post('/', commonValidate(courseValidationRules), courseController.createC
  */
 router.put('/:courseId', commonValidate(courseValidationRules), courseController.updateCourse);
 
+// Delete a course
 /**
  * @openapi
  * '/api/courses/{courseId}':
@@ -158,7 +160,111 @@ router.put('/:courseId', commonValidate(courseValidationRules), courseController
  */
 router.delete('/:courseId', courseController.deleteCourseById);
 
+// Get a course by ID
+/**
+ * @openapi
+ * '/api/courses/{courseId}':
+ *  get:
+ *     tags:
+ *     - Course Controller
+ *     summary: Get course by ID
+ *     description: Retrieve a course's details by its ID
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: courseId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the course to retrieve
+ *     responses:
+ *      200:
+ *        description: Success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                courseId:
+ *                  type: integer
+ *                  example: 1
+ *                CourseName:
+ *                  type: string
+ *                  example: Test1000
+ *                Description:
+ *                  type: string
+ *                  example: Test1000
+ *                CategoryID:
+ *                  type: integer
+ *                  example: 1
+ *                Cover:
+ *                  type: string
+ *                  example: Cover
+ *                PublishedAt:
+ *                  type: string
+ *                  format: date-time
+ *                  example: "2024-08-10T12:00:00Z"
+ *                teacherId:
+ *                  type: integer
+ *                  example: 1
+ *      400:
+ *        description: Bad Request
+ *      404:
+ *        description: Course not found
+ *      500:
+ *        description: Server Error
+ */
 router.get('/:courseId', courseController.getCourseById);
+
+// Get all courses
+/**
+ * @openapi
+ * /api/courses:
+ *   get:
+ *     tags:
+ *       - Course Controller
+ *     summary: Get all courses
+ *     description: Retrieve a list of all courses available in the system
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   courseId:
+ *                     type: integer
+ *                     example: 1
+ *                   CourseName:
+ *                     type: string
+ *                     example: Test1000
+ *                   Description:
+ *                     type: string
+ *                     example: Test1000
+ *                   CategoryID:
+ *                     type: integer
+ *                     example: 1
+ *                   Cover:
+ *                     type: string
+ *                     example: Cover
+ *                   PublishedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2024-08-10T12:00:00Z"
+ *                   teacherId:
+ *                     type: integer
+ *                     example: 1
+ *       500:
+ *         description: Server Error
+ */
+router.get('/', courseController.getAllCourses);
+
 
 module.exports = router;
 

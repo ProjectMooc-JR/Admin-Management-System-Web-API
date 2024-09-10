@@ -93,7 +93,7 @@ app.use('/api/courses', courseRoutes);
 
 //config chapterrouter
 const chapterRoutes = require('./router/chapterRoutes');
-app.use('/api', chapterRoutes);
+app.use('/api/courses', chapterRoutes);
 
 // const courseScheduleRouter = require("./router/courseScheduleRouter");
 // app.use("/api/courseSchedule", courseScheduleRouter);

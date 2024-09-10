@@ -75,39 +75,46 @@ const updateCourse = async (courseId, updatedCourse) => {
   }
 };
 
-//Delete course
-/**
- * @param {number} courseId - The ID of the course to delete
- * @returns {Promise<void>}
- */
-
-const deleteChapter = async (courseId) => {
-  const query = "DELETE FROM coursechapters WHERE CourseID = ?";
-  const [result] = await db.query(query, [courseId]);
-  return result.affectedRows > 0;
-};
-
-const deleteComments = async (courseId) => {
-  const query = "DELETE FROM coursecomments WHERE CourseID = ?";
-  const [result] = await db.query(query, [courseId]);
-  return result.affectedRows > 0;
-};
-
+//Delete course by ID
 const deleteCourse = async (courseId) => {
-    deleteChapter(courseId);
-    deleteComments(courseId);
-    const query = "DELETE FROM Courses WHERE ID = ?";
-
+    const connection = await db.getConnection(); // Get a connection from the pool
     try {
-      const [result] = await db.query(query, [courseId]);
-      if (result.affectedRows === 0) {
-        throw new Error("Course not found");
-      }
-      return result;
+        // Start a new transaction
+        await connection.beginTransaction();
+
+        // Delete related chapters
+        await connection.query('DELETE FROM coursechapters WHERE CourseID = ?', [courseId]);
+
+        // Delete related comments
+        await connection.query('DELETE FROM coursecomments WHERE CourseID = ?', [courseId]);
+
+        // Delete the course
+        const result = await connection.query('DELETE FROM Courses WHERE ID = ?', [courseId]);
+
+        // If no course was found to delete, throw an error
+        if (result.affectedRows === 0) {
+            throw new Error('Course not found');
+        }
+
+        // Commit the transaction
+        await connection.commit();
+
+        return { isSuccess: true };
     } catch (error) {
-      throw new Error(`Error deleting course: ${error.message}`);
+        // Check if the error is due to foreign key constraints
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') { // MySQL foreign key constraint error code
+            await connection.rollback(); // Rollback the transaction
+            return { isSuccess: false, message: 'Cannot delete due to foreign key constraints' };
+        } else {
+            // For any other errors, rollback the transaction
+            await connection.rollback();
+            return { isSuccess: false, message: error.message };
+        }
+    } finally {
+        // Release the connection back to the pool
+        connection.release();
     }
-  }
+};
 
 // Get all courses
 const getAllCourses = async () => {

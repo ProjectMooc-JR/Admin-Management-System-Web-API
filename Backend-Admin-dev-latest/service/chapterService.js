@@ -1,31 +1,44 @@
 const { db } = require("../db/mysqldb.js");
 
-// CRUD operations for chapters
+// Add a new chapter
 const addChapterAsync = async (chapter) => {
-  try {
-    const result = await db.query(
-      "INSERT INTO coursechapters (CourseID, ChapterTitle, ChapterDescription, VideoURL, isCompleted, ChapterOrder) VALUES (?, ?, ?, ?, ?, ?)",
-      [chapter.CourseID, chapter.ChapterTitle, chapter.ChapterDescription, chapter.VideoURL, false, chapter.ChapterOrder]
-    );
-    return { isSuccess: true, data: result };
-  } catch (error) {
-    console.error("Error adding chapter:", error);
-    return { isSuccess: false, message: error.message };
-  }
+    const query = `
+        INSERT INTO coursechapters 
+        (CourseID, ChapterTitle, ChapterDescription, VideoURL, isCompleted, ChapterOrder) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    try {
+        const [result] = await db.query(query, [
+            chapter.CourseID,
+            chapter.ChapterTitle,
+            chapter.ChapterDescription,
+            chapter.VideoURL,
+            chapter.isCompleted,
+            chapter.ChapterOrder,
+        ]);
+        return { isSuccess: true, data: result };
+    } catch (error) {
+        console.error('Error adding chapter:', error);
+        return { isSuccess: false, message: error.message };
+    }
 };
+
 
 // Get all chapters for a course
 const getAllChaptersByCourseIdAsync = async (courseId) => {
-  try {
-    const result = await db.query(
-      "SELECT * FROM coursechapters WHERE CourseID = ? ORDER BY ChapterOrder",
-      [courseId]
-    );
-    return { isSuccess: true, data: result };
-  } catch (error) {
-    console.error("Error retrieving chapters:", error);
-    return { isSuccess: false, message: error.message };
-  }
+    const query = `
+        SELECT * FROM coursechapters 
+        WHERE CourseID = ? 
+        ORDER BY ChapterOrder
+    `;
+
+    try {
+        const [result] = await db.query(query, [courseId]);
+        return { isSuccess: true, data: result };
+    } catch (error) {
+        console.error('Error retrieving chapters:', error);
+        return { isSuccess: false, message: error.message };
+    }
 };
 
 // Get a chapter by ID
@@ -35,7 +48,6 @@ const getChapterByCourseAndIdAsync = async (courseId, chapterId) => {
             "SELECT * FROM coursechapters WHERE CourseID = ? AND ID = ?",
             [courseId, chapterId]
         );
-
         if (result.length > 0) {
             return { isSuccess: true, data: result[0], message: "Chapter found" };
         } else {
@@ -48,40 +60,83 @@ const getChapterByCourseAndIdAsync = async (courseId, chapterId) => {
 };
 
 
-// Update a chapter
-const updateChapterAsync = async (chapter) => {
+// Update a chapter by CourseAndOrder
+const updateChapterByCourseAndOrderAsync = async (courseId, chapterOrder, chapter) => {
+  const connection = await db.getConnection();
   try {
-    const result = await db.query(
-      "UPDATE coursechapters SET ChapterTitle = ?, ChapterDescription = ?, VideoURL = ?, isCompleted = ?, ChapterOrder = ? WHERE ID = ?",
+    await connection.beginTransaction();
+    console.log(`Updating chapter with CourseID: ${courseId} and ChapterOrder: ${chapterOrder}`);
+
+    const result = await connection.query(
+      "UPDATE coursechapters SET ChapterTitle = ?, ChapterDescription = ?, VideoURL = ?, isCompleted = ?, ChapterOrder = ? WHERE CourseID = ? AND ChapterOrder = ?",
       [
         chapter.ChapterTitle,
         chapter.ChapterDescription,
         chapter.VideoURL,
         chapter.isCompleted,
         chapter.ChapterOrder,
-        chapter.id,
+        courseId,
+        chapterOrder
       ]
     );
-    return { isSuccess: true, data: result };
+
+    console.log("Update result:", result);
+
+    if (result.affectedRows === 0) {
+      throw new Error('Chapter not found or nothing was updated');
+    }
+
+    await connection.commit();
+    return { isSuccess: true };
   } catch (error) {
-    console.error("Error updating chapter:", error);
+    await connection.rollback();
+    console.error("Error during update:", error);
     return { isSuccess: false, message: error.message };
+  } finally {
+    connection.release();
   }
 };
 
-// Delete a chapter
-const deleteChapterByIdAsync = async (chapterId) => {
-  try {
-    const result = await db.query(
-      "DELETE FROM coursechapters WHERE ID = ?",
-      [chapterId]
-    );
-    return { isSuccess: true, data: result };
-  } catch (error) {
-    console.error("Error deleting chapter:", error);
-    return { isSuccess: false, message: error.message };
-  }
+
+// Delete a chapter by CourseAndOrder
+const deleteChapterByCourseAndOrderAsync = async (courseId, chapterOrder) => {
+    const connection = await db.getConnection(); // 从连接池中获取连接
+    try {
+        // 开启一个新事务
+        await connection.beginTransaction();
+
+        // 删除指定的章节，根据 courseId 和 chapterOrder 定位
+        const result = await connection.query(
+            'DELETE FROM coursechapters WHERE CourseID = ? AND ChapterOrder = ?', 
+            [courseId, chapterOrder]
+        );
+
+        // 如果没有找到要删除的章节，抛出错误
+        if (result.affectedRows === 0) {
+            throw new Error('Chapter not found');
+        }
+
+        // 提交事务
+        await connection.commit();
+        return { isSuccess: true };
+    } catch (error) {
+        // 如果是外键约束导致的错误
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') { // MySQL 外键约束错误码
+            await connection.rollback(); // 回滚事务
+            return { isSuccess: false, message: 'Cannot delete chapter due to foreign key constraints' };
+        } else {
+            // 对于其他错误，同样回滚事务
+            await connection.rollback();
+            return { isSuccess: false, message: error.message };
+        }
+    } finally {
+        // 释放连接回连接池
+        connection.release();
+    }
 };
+
+
+
 
 // Progress tracking
 const markChapterAsCompletedAsync = async (chapterId) => {
@@ -101,7 +156,7 @@ module.exports = {
   addChapterAsync,
   getAllChaptersByCourseIdAsync,
   getChapterByCourseAndIdAsync,
-  updateChapterAsync,
-  deleteChapterByIdAsync,
+  updateChapterByCourseAndOrderAsync,
+  deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
 };

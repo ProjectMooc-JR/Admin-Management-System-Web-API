@@ -53,11 +53,11 @@ const updateCourse = async (req, res) => {
 
 //Delete course by ID
 const deleteCourseById = async (req, res) => {
-    const id = parseInt(req.params.courseId);
-    const result = await courseService.deleteCourse(id);
+    const courseId = parseInt(req.params.courseId);
+    const result = await courseService.deleteCourse(courseId);
     res.status(result.isSuccess ? 200 : 400).json({
-    status: result.isSuccess ? 200 : 400,
-    message: result.message
+        status: result.isSuccess ? 200 : 400,
+        message: result.message,
     });
 };
 
