@@ -46,6 +46,7 @@ router.put('/:courseCategoryId',courseCategoryController.updateCourseCategoryAsy
 router.delete("/:courseCategoryId",courseCategoryController.deleteCourseCategoryByIdAsync);
 router.get("/:courseCategoryId",courseCategoryController.getCourseCategoryByIdAsync)
 router.get("/",courseCategoryController.getAllCourseCategoryAsync)
+router.get("/courseCategoryLevel/:level",courseCategoryController.getAllCourseCategoryLevelAsync)
 router.get("/:page/:pageSize",courseCategoryController.getAllCourseCategoryByPageAsync)
 router.post("/mult-delete",courseCategoryController.deleteMutiCourseCategoryAsync)
 module.exports=router
