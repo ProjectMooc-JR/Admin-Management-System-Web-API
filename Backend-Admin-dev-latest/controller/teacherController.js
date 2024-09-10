@@ -12,6 +12,8 @@ const addTeacherAsync = async (req, res) => {
     Description: req.body.Description,
     HireDate: req.body.HireDate,
     HireStatus: req.body.HireStatus === "true", //这里可以将字符串“true”转换成boolean值
+    MobileNum: req.body.MobileNum,
+    LinkedInLink: req.body.LinkedInLink,
   };
   console.log("Teacher data received:", teacher);
 
@@ -32,17 +34,20 @@ const getAllTeachersAsync = async (req, res) => {
   // obtain pagination parameters from query
   const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
   const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
+  const includeUserData = req.query.includeUserData === "true"; // get query parameter to decide if user data should be included
 
   try {
     // call getAllTeachersAsync from service layer and pass in the pagination params
-    const result = await teacherService.getAllTeachersAsync(page, pageSize);
+    const result = await teacherService.getAllTeachersAsync(
+      page,
+      pageSize,
+      includeUserData
+    );
     // return the result obtained from service layer to front end
     res.sendCommonValue(
       {
         items: result.data.items,
-        result: result.data.total,
-        page,
-        pageSize,
+        total: result.data.total,
       },
       result.message,
       result.isSuccess ? 200 : 400
@@ -75,8 +80,9 @@ const updateTeacherAsync = async (req, res) => {
   teacher.Specialization = req.body.Specialization;
   teacher.Description = req.body.Description;
   teacher.HireDate = req.body.HireDate;
+  teacher.MobileNum = req.body.MobileNum;
+  teacher.LinkedInLink = req.body.LinkedInLink;
   //teacher.HireStatus = parseInt(req.body.HireStatus);
-
   teacher.HireStatus = req.body.HireStatus === "true";
 
   console.log("updateTeacherAsync before await", teacher);
@@ -99,10 +105,22 @@ const deleteTeacherByIdAsync = async (req, res) => {
   );
 };
 
+// Get a specific teacher's information by mobile number
+const getTeacherByMobileNumAsync = async (req, res) => {
+  const MobileNum = req.params.MobileNum;
+  const result = await teacherService.getTeacherByMobileNumAsync(MobileNum);
+  res.sendCommonValue(
+    result.data,
+    result.message,
+    result.isSuccess ? 200 : 400
+  );
+};
+
 module.exports = {
   addTeacherAsync,
   getAllTeachersAsync,
   getTeacherByIdAsync,
   updateTeacherAsync,
   deleteTeacherByIdAsync,
+  getTeacherByMobileNumAsync,
 };
