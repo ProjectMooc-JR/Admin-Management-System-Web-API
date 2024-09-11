@@ -3,8 +3,8 @@ const courseCategoryService = require("../service/courseCategoryService");
 const addCourseCategoryAsync = async (req, res) => {
   let courseCategory = {
     CategoryName: req.body.CategoryName,
-    Level: req.body.Level?req.body.Level:0,
-    ParentID: req.body.ParentID?req.body.ParentID:0,
+    Level: req.body.Level ? req.body.Level : 0,
+    ParentID: req.body.ParentID ? req.body.ParentID : 0,
     Notes: req.body.Notes ? req.body.Notes : "",
   };
   let result = await courseCategoryService.addCourseCategoryAsync(courseCategory);
@@ -12,14 +12,11 @@ const addCourseCategoryAsync = async (req, res) => {
     result.data,
     result.msg,
     result.isSuccess ? 201 : 400
-    );
+  );
 };
 
 const getAllCourseCategoryAsync = async (req, res) => {
-  let page = parseInt(req.params.page);
-  let pageSize = parseInt(req.params.pageSize);
-  console.log(page)
-  const result = await courseCategoryService.getAllCourseCategoryAsync(page,pageSize);
+  const result = await courseCategoryService.getAllCourseCategoryAsync();
   res.sendCommonValue(
     result.data,
     result.msg,
@@ -61,11 +58,33 @@ const deleteCourseCategoryByIdAsync = async (req, res) => {
     result.isSuccess ? 200 : 400
   );
 };
+const getAllCourseCategoryByPageAsync = async (req, res) => {
+  const page = parseInt(req.params.page) || 1;
+  const pageSize = parseInt(req.params.pageSize) || 10;
+  const result = await courseCategoryService.getAllCourseCategoryByPage(page, pageSize);
+  res.sendCommonValue(
+    result.data,
+    result.message,
+    result.isSuccess ? 200 : 400
+  );
+
+}
+const deleteMutiCourseCategoryAsync=async(req, res)=>{
+  const ids=req.body.ids
+  const result=courseCategoryService.deleteCourseCategoryByBatchAsync(ids)
+  res.sendCommonValue(
+    result.data,
+    result.msg,
+    result.isSuccess ? 200 : 400
+  )
+}
 
 module.exports = {
   addCourseCategoryAsync,
   getAllCourseCategoryAsync,
   getCourseCategoryByIdAsync,
+  getAllCourseCategoryByPageAsync,
   updateCourseCategoryAsync,
-  deleteCourseCategoryByIdAsync
+  deleteCourseCategoryByIdAsync,
+  deleteMutiCourseCategoryAsync
 }

@@ -147,6 +147,8 @@ router.get("/:page/:pageSize",commonValidate([
       .withMessage("Not a valid page"),
 ]), courseCategoryController.getAllCourseCategoryAsync)
 
+router.post("/mult-delete",courseCategoryController.deleteMutiCourseCategoryAsync)
+
 
 module.exports = router
 
