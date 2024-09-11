@@ -19,15 +19,10 @@ const addCourseCategoryAsync = async (req, res) => {
 
 const getAllCourseCategoryAsync = async (req, res) => {
   const result = await courseCategoryService.getAllCourseCategoryAsync();
-  res.sendCommonValue(
-    result.data,
-    result.msg,
-    result.isSuccess ? 200 : 400
-  );
+  res.sendCommonValue(result.data, result.msg, result.isSuccess ? 200 : 400);
 };
 
 const getCourseCategoryByIdAsync = async (req, res) => {
-  console.log('========getCourseCategoryByIdAsync');
   const id = req.params.courseCategoryId;
   const result = await courseCategoryService.getCourseCategoryById(id);
   res.sendCommonValue(result.data, result.msg, result.isSuccess ? 200 : 400);
@@ -52,8 +47,6 @@ const deleteCourseCategoryByIdAsync = async (req, res) => {
   res.sendCommonValue(result.data, result.msg, result.isSuccess ? 200 : 400);
 };
 const getAllCourseCategoryByPageAsync = async (req, res) => {
-  console.log("=====getAllCourseCategoryByPageAsync")
-  
   const page = parseInt(req.params.page) || 1;
   const pageSize = parseInt(req.params.pageSize) || 10;
   const result = await courseCategoryService.getAllCourseCategoryByPage(
@@ -66,39 +59,11 @@ const getAllCourseCategoryByPageAsync = async (req, res) => {
     result.isSuccess ? 200 : 400
   );
 };
-const getAllCourseCategoryLevelAsync = async (req, res) => {
-  console.log('========');
-  const level = parseInt(req.params.level) || -1;
-  const result = await courseCategoryService.getAllCourseCategoryLevelAsync(
-    level
-  );
-  res.sendCommonValue(
-    result.data,
-    result.message,
-    result.isSuccess ? 200 : 400
-  );
+const deleteMutiCourseCategoryAsync = async (req, res) => {
+  const ids = req.body.ids;
+  const result = courseCategoryService.deleteCourseCategoryByBatchAsync(ids);
+  res.sendCommonValue(result.data, result.msg, result.isSuccess ? 200 : 400);
 };
-const getAllCourseCategoryByPageAsync = async (req, res) => {
-  const page = parseInt(req.params.page) || 1;
-  const pageSize = parseInt(req.params.pageSize) || 10;
-  const result = await courseCategoryService.getAllCourseCategoryByPage(page, pageSize);
-  res.sendCommonValue(
-    result.data,
-    result.message,
-    result.isSuccess ? 200 : 400
-  );
-
-}
-const deleteMutiCourseCategoryAsync=async(req, res)=>{
-  const ids=req.body.ids
-  const result=courseCategoryService.deleteCourseCategoryByBatchAsync(ids)
-  res.sendCommonValue(
-    result.data,
-    result.msg,
-    result.isSuccess ? 200 : 400
-  )
-}
-
 
 module.exports = {
   addCourseCategoryAsync,
@@ -107,6 +72,5 @@ module.exports = {
   getAllCourseCategoryByPageAsync,
   updateCourseCategoryAsync,
   deleteCourseCategoryByIdAsync,
-  deleteMutiCourseCategoryAsync
-}
-
+  deleteMutiCourseCategoryAsync,
+};
