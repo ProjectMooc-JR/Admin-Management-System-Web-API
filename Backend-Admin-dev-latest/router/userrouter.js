@@ -1,11 +1,31 @@
 var express = require("express");
-require('express-async-errors');
+require("express-async-errors");
 var router = express.Router();
 
 const { body, query, param } = require("express-validator");
 const { commonValidate } = require("../middleware/expressValidator");
 
 var usercontroller = require("../controller/usercontroller");
+
+// Get whole set of users
+/**
+ * @openapi
+ * '/api/users':
+ *  get:
+ *     tags:
+ *     - User
+ *     summary: Get whole set of users
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *      200:
+ *        description: Users data fetched successfully
+ *      404:
+ *        description: No users found
+ *      500:
+ *        description: Server error
+ */
+router.get("/", usercontroller.getWholeUsersAsync);
 
 //add user
 /**
@@ -52,16 +72,19 @@ var usercontroller = require("../controller/usercontroller");
  *      500:
  *        description: Server Error
  */
- router.post("",
- commonValidate([
-   body("username").notEmpty().withMessage("username invalid"),
-   body("password").notEmpty().isLength({ min: 8 }),
-   body("email").isEmail().withMessage("email address invalid"),
-   body("access").notEmpty().isIn(["admin", "student", "teacher"]).withMessage("access invalid"),
- ]),
- usercontroller.addUserAsync
+router.post(
+  "",
+  commonValidate([
+    body("username").notEmpty().withMessage("username invalid"),
+    body("password").notEmpty().isLength({ min: 8 }),
+    body("email").isEmail().withMessage("email address invalid"),
+    body("access")
+      .notEmpty()
+      .isIn(["admin", "student", "teacher"])
+      .withMessage("access invalid"),
+  ]),
+  usercontroller.addUserAsync
 );
- 
 
 /**
  * @openapi
@@ -92,7 +115,6 @@ router.delete(
   param([param("ids").notEmpty().withMessage("Invalid User id")]),
   usercontroller.deleteUserByIdsAsync
 );
-
 
 /**
  * @openapi
@@ -140,6 +162,5 @@ router.get(
   ]),
   usercontroller.getUserListAsync
 );
-
 
 module.exports = router;

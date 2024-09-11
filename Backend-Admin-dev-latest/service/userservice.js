@@ -20,6 +20,21 @@ var getUserbyNameAsync = async (name) => {
   return { isSuccess: true, message: "", data: user };
 };
 
+// Get whole set of users without pagination
+const getWholeUsersAsync = async () => {
+  let sql = "SELECT * FROM user";
+  let result = await db.query(sql);
+
+  if (result[0].length > 0) {
+    return {
+      isSuccess: true,
+      message: "Users fetched successfully",
+      data: result[0],
+    };
+  }
+  return { isSuccess: false, message: "No users found", data: [] };
+};
+
 // add user
 const addUserAsync = async (user) => {
   let sql =
@@ -55,13 +70,11 @@ const deleteUserByIdAsync = async (id) => {
 };
 
 const deleteUserByIdsAsync = async (ids) => {
-
   //sql injection, don't recommend
   //let sql = `Delete FROM user where id in (${ids})`;
 
-
   // avoid sql injection
-  let idArray = ids.split(",")
+  let idArray = ids.split(",");
   let idsString = idArray.map((id) => `'${parseInt(id)}'`).join(",");
   let sql1 = `Delete FROM user where id in (${idsString})`;
 
@@ -136,4 +149,5 @@ module.exports = {
   deleteUserByIdAsync,
   updateUserByIdAsync,
   deleteUserByIdsAsync,
+  getWholeUsersAsync,
 };

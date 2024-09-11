@@ -48,6 +48,7 @@ const getAllTeachersAsync = async (req, res) => {
       {
         items: result.data.items,
         total: result.data.total,
+        // result: result.data.total, //backup我写的部分
       },
       result.message,
       result.isSuccess ? 200 : 400
