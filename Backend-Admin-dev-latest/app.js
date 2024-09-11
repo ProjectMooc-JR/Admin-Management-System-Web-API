@@ -110,7 +110,7 @@ app.use("/api/courseCategory", courseCategoryRouter);
 const erorhandle = require("./middleware/errorhandling");
 app.use(erorhandle.errorhandling);
 
-let port = process.env.PORT || 9002;
+let port = process.env.PORT || 9000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port},http://localhost:${port}`);
 });
