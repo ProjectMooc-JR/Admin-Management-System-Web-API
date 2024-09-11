@@ -164,26 +164,6 @@ const getAllCourseCategoryAsync = async () => {
   }
 };
 
-// get all course category
-const getAllCourseCategoryLevelAsync = async (level) => {
-  let wheresql = "";
-  if (level > -1) {
-    wheresql = " where Level = ?";
-  }
-  const sql = "SELECT * FROM coursecategories " + wheresql;
-  try {
-    logger.info("Starting query to fetch all course categories");
-    const [result] = await db.query(sql, [level]);
-    logger.info(
-      "Query successful: fetched all course categories based on a level"
-    );
-    return { isSuccess: true, msg: "query successfully", data: result };
-  } catch (error) {
-    logger.error(`Error fetching course categories: ${error.message}`);
-    throw new Error(`Error fetching courses: ${error.message}`);
-  }
-};
-
 // get course category by id
 const getCourseCategoryById = async (courseId) => {
   const sql = "SELECT * FROM coursecategories WHERE ID = ?";
@@ -237,84 +217,17 @@ const getAllCourseCategoryByPage = async (page, pageSize) => {
     data: { items: categorylist, total: total },
   };
 };
-
-// const deleteCourseCategoryByBatchAsync=async(ids)=>{
-//   console.log(11111,ids)
-//   const idsString = ids.join(',');
-//   let sql=`DELETE FROM coursecategories WHERE ID IN (${idsString});`
-//   await db.query(sql)
-//   return { isSuccess: true, msg: "course category delete successfully", data: null }
-// }
-
 const deleteCourseCategoryByBatchAsync = async (ids) => {
-  if (!ids || ids.length == 0) {
-    return { isSuccess: false, msg: "id is missing" };
-  }
-
-  const connection = await db.getConnection();
-
-  const checkParentIdSql =
-    "Select count(*) as count from coursecategories where ParentID=?";
-  const checkCourse =
-    "Select count(*) as count from courses where CategoryID=? ";
-  const deleteSql = "Delete FROM coursecategories WHERE ID = ? ;";
-  try {
-    await connection.beginTransaction();
-
-    for (let i = 0; i < ids.length; i++) {
-      let courseCategoryId = parseInt(ids[i]);
-      logger.info(
-        `Starting transaction to delete category with ID: ${courseCategoryId}`
-      );
-      const [result] = await connection.query(checkParentIdSql, [
-        courseCategoryId,
-      ]);
-      if (result[0].count !== 0) {
-        logger.warn(
-          `Category with ID: ${courseCategoryId} has child categories, deletion not allowed.`
-        );
-        throw new Error(
-          "This category is the parent class of other course categories, which cannot be deleted"
-        );
-      }
-
-      const [result1] = await connection.query(checkCourse, [courseCategoryId]);
-      if (result1[0].count !== 0) {
-        logger.warn(
-          `Category with ID: ${courseCategoryId} has associated courses, deletion not allowed.`
-        );
-
-        throw new Error(
-          "This category is the parent class of other course, which cannot be deleted"
-        );
-      }
-      const [rows] = await connection.query(deleteSql, [courseCategoryId]);
-      if (rows.affectedRows === 0) {
-        logger.warn(`Category with ID: ${courseCategoryId} does not exist.`);
-      }
-    }
-    await connection.commit();
-    logger.info(`Category with ID: ${courseCategoryId} deleted successfully.`);
-
-    return {
-      isSuccess: true,
-      msg: "course category delete successfully",
-      data: null,
-    };
-  } catch (error) {
-    await connection.rollback();
-    logger.error(`Error deleting category  - ${error.message}`);
-  } finally {
-    connection.release();
-    logger.info("Transaction complete for deleting category ");
-  }
+  console.log(11111, ids);
+  const idsString = ids.join(",");
+  let sql = `DELETE FROM coursecategories WHERE ID IN (${idsString});`;
+  await db.query(sql);
   return {
-    isSuccess: false,
-    msg: "Delete failed",
+    isSuccess: true,
+    msg: "course category delete successfully",
     data: null,
   };
 };
-
 module.exports = {
   getCourseCategoryById,
   getAllCourseCategoryAsync,
@@ -323,5 +236,4 @@ module.exports = {
   updateCourseCategoryAsync,
   getAllCourseCategoryByPage,
   deleteCourseCategoryByBatchAsync,
-  getAllCourseCategoryLevelAsync
 };
