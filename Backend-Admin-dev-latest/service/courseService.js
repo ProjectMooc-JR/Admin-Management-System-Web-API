@@ -94,29 +94,58 @@ const deleteComments = async (courseId) => {
 };
 
 const deleteCourse = async (courseId) => {
-    deleteChapter(courseId);
-    deleteComments(courseId);
-    const query = "DELETE FROM Courses WHERE ID = ?";
+  deleteChapter(courseId);
+  deleteComments(courseId);
+  const query = "DELETE FROM Courses WHERE ID = ?";
 
-    try {
-      const [result] = await db.query(query, [courseId]);
-      if (result.affectedRows === 0) {
-        throw new Error("Course not found");
-      }
-      return result;
-    } catch (error) {
-      throw new Error(`Error deleting course: ${error.message}`);
+  try {
+    const [result] = await db.query(query, [courseId]);
+    if (result.affectedRows === 0) {
+      throw new Error("Course not found");
     }
+    return result;
+  } catch (error) {
+    throw new Error(`Error deleting course: ${error.message}`);
   }
+};
 
 // Get all courses
 const getAllCourses = async () => {
   const query = "SELECT * FROM Courses";
   try {
     const [rows] = await db.query(query);
-    return rows;
+    return { isSuccess: true, message: "successful", data: rows };
   } catch (error) {
-    throw new Error(`Error fetching courses: ${error.message}`);
+    throw new Error(`Error select comment: ${error.message}`);
+  }
+};
+
+// Get all courses
+const getAllCoursesByPage = async (page, pageSize) => {
+  // define a SQL script to count the total number of courses in database
+  let countSql = "SELECT count(*) total FROM courses;";
+  let [resultCount] = await db.query(countSql);
+  // extract the total number of courses from the query result
+  let total = resultCount[0].total;
+  // if the total number of courses is 0, return an empty list with a total of 0
+  if (total == 0) {
+    return { isSuccess: true, message: "", data: { items: [], total: 0 } };
+  }
+  const sql =
+    "select c.*,s.CategoryName, e.username from courses as c " +
+    "left  join coursecategories as s on c.CategoryID=s.ID " +
+    "left join teachers as r on c.TeacherID=r.ID " +
+    "left join user as e on r.User_id=e.ID " +
+    "LIMIT ? OFFSET ?;";
+  try {
+    const [rows] = await db.query(sql, [pageSize, (page - 1) * pageSize]);
+    return {
+      isSuccess: true,
+      message: "successful",
+      data: { items: rows, total: total },
+    };
+  } catch (error) {
+    throw new Error(`Error select comment: ${error.message}`);
   }
 };
 
@@ -141,4 +170,5 @@ module.exports = {
   deleteCourse,
   getAllCourses,
   getCourseById,
+  getAllCoursesByPage
 };

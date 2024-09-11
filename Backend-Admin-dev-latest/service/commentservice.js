@@ -79,7 +79,7 @@ const deleteCommentByIdAsync = async (id) => {
 
 const addCommentAsync = async(comment) => {
     let sql = "INSERT INTO coursecomments (CourseID, CommentContent, CommentTime, UserID) VALUES (?,?,?,?)";
-    let [result] = await db.query(sql, [comment.CourseID, comment.CommentContent, comment.CommentTime, comment.UserID]);
+    let [result] = await db.query(sql, [comment.CourseID, comment.CommentContent, new Date(), comment.UserID]);
     if (result.affectedRows > 0) {
       return { 
         isSuccess: true, 

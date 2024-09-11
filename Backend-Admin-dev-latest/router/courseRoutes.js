@@ -158,7 +158,24 @@ router.put('/:courseId', commonValidate(courseValidationRules), courseController
  */
 router.delete('/:courseId', courseController.deleteCourseById);
 
+router.get('/courselist', courseController.getAllCourses);
 router.get('/:courseId', courseController.getCourseById);
+
+router.get(
+    "/:page/:pageSize",
+    commonValidate([
+      param("page")
+        .notEmpty()
+        .isInt({ allow_leading_zeroes: false, min: 1 })
+        .withMessage("Not a valid page"),
+      param("pageSize")
+        .notEmpty()
+        .isInt({ allow_leading_zeroes: false, min: 1 })
+        .withMessage("Not a valid page"),
+    ]),
+    courseController.getAllCoursesByPage
+  );
+
 
 module.exports = router;
 

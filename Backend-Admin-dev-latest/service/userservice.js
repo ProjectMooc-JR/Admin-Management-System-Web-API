@@ -59,18 +59,27 @@ const deleteUserByIdsAsync = async (ids) => {
   //sql injection, don't recommend
   //let sql = `Delete FROM user where id in (${ids})`;
 
-
   // avoid sql injection
-  let idArray = ids.split(",")
-  let idsString = idArray.map((id) => `'${parseInt(id)}'`).join(",");
-  let sql1 = `Delete FROM user where id in (${idsString})`;
+  // let idArray = ids.split(",")
+  // let idsString = idArray.map((id) => `'${parseInt(id)}'`).join(",");
+  // let sql1 = `Delete FROM user where id in (${idsString})`;
 
-  let [result] = await db.query(sql);
-  if (result.affectedRows > 0) {
-    return { isSuccess: true, message: "Delete successfully" };
-  }
+  //implement best approach
 
-  return { isSuccess: false, message: "Fail to delete" };
+    let sql = `DELETE FROM user WHERE id IN (?)`;
+    let idsArray = ids.split(",").map(id => parseInt(id));
+    await db.query(sql, [idsArray], function (error, results) {
+      if (results.affectedRows > 0) {
+        return { isSuccess: true, message: "Delete successfully" };
+      }
+      if (error) throw error;
+     
+    });
+
+  //let [result] = await db.query(sql);
+  // if (result.affectedRows > 0) {
+  //   return { isSuccess: true, message: "Delete successfully" };
+  // }
 };
 
 //update

@@ -47,7 +47,9 @@ const getAllTeachersAsync = async (req, res) => {
     res.sendCommonValue(
       {
         items: result.data.items,
-        total: result.data.total,
+        result: result.data.total,
+        page,
+        pageSize,
       },
       result.message,
       result.isSuccess ? 200 : 400

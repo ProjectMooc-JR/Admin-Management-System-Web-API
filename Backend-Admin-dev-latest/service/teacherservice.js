@@ -18,7 +18,7 @@ const getAllTeachersAsync = async (page, pageSize, includeUserData = false) => {
       SELECT t.ID, t.User_id, t.Specialization, t.Description, t.HireDate, t.HireStatus, t.MobileNum, t.LinkedInLink,
              u.username
       FROM teachers t
-      JOIN user u ON t.User_id = u.id
+      INNER JOIN user u ON t.User_id = u.id
       LIMIT ? OFFSET ?;`;
   } else {
     sql = "SELECT * FROM teachers LIMIT ? OFFSET ?;";
