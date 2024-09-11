@@ -29,7 +29,7 @@ const addUserAsync = async (req, res) => {
   user.address = req.body.address;
   user.age = req.body.age;
   user.gender = req.body.gender;
-  user.nickname=req.body.nickname;
+  user.nickname = req.body.nickname;
   user.avatar = avatarLocation;
   user.access = req.body.access;
   user.active = req.body.active;
@@ -49,6 +49,15 @@ const addUserAsync = async (req, res) => {
   }
 };
 
+const getWholeUsersAsync = async (req, res) => {
+  const result = await userservice.getWholeUsersAsync();
+  res.sendCommonValue(
+    result.data,
+    result.message,
+    result.isSuccess ? 200 : 404
+  );
+};
+
 const getUserAsync = async (req, res) => {
   let username = req.query.username;
   try {
@@ -60,7 +69,7 @@ const getUserAsync = async (req, res) => {
       res.sendCommonValue({}, "failed", 0); // Assuming 0 is the correct status for fail
     }
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error("Error fetching user:", error);
     res.sendCommonValue({}, "Error in fetching user", 0);
   }
 };
@@ -115,7 +124,7 @@ const updateUserAsync = async (req, res) => {
   user.avatar = req.body.avatar;
   user.access = req.body.access;
   user.active = req.body.active;
-  
+
   let checkUserResult = await userservice.checkUserNameAsync(
     // user.username,
     user.id
@@ -141,9 +150,7 @@ const updateUserAsync = async (req, res) => {
 //   const userId = parseInt(req.params.id);
 //   const password = req.body.password;
 
-
-
-  // Hash the new password before storing it
+// Hash the new password before storing it
 //   let encrypPassword = await bcrypt.hashSync(password, bcryptConfig.salt);
 
 //   // Update the password in the database
@@ -171,8 +178,9 @@ module.exports = {
   deleteUserByIdAsync,
   getUserListAsync,
   updateUserAsync,
-  deleteUserByIdsAsync
+  deleteUserByIdsAsync,
   //getUserByIdAsync,
   //getUserListByAccessAsync,
   //updatePasswordAsync
+  getWholeUsersAsync,
 };
