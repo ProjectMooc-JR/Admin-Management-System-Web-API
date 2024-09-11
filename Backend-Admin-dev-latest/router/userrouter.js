@@ -90,8 +90,9 @@ var usercontroller = require("../controller/usercontroller");
 router.delete(
   "/:ids",
   param([param("ids").notEmpty().withMessage("Invalid User id")]),
-  usercontroller.deleteUserByIdAsync
+  usercontroller.deleteUserByIdsAsync
 );
+
 
 /**
  * @openapi
@@ -137,7 +138,7 @@ router.get(
 
       .withMessage("Not a valid page"),
   ]),
-  usercontroller.getUserAsync
+  usercontroller.getUserListAsync
 );
 
 

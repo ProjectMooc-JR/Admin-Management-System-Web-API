@@ -72,20 +72,30 @@ const getUserAsync = async (req, res) => {
 //     : res.sendCommonValue(result.data, result.message, 0);
 // }
 
-// const getUserListAsync = async (req, res) => {
-//   let page = parseInt(req.params.page);
-//   let pageSize = parseInt(req.params.pageSize);
-//   let result = await userservice.getUserListAsync(page, pageSize);
-//   if (result.isSuccess) {
-//     res.sendCommonValue(result.data, "success", 1);
-//   } else {
-//     res.sendCommonValue([], "failed", 0);
-//   }
-// };
+const getUserListAsync = async (req, res) => {
+  let page = parseInt(req.params.page);
+  let pageSize = parseInt(req.params.pageSize);
+  let result = await userservice.getUserListAsync(page, pageSize);
+  if (result.isSuccess) {
+    res.sendCommonValue(result.data, "success", 1);
+  } else {
+    res.sendCommonValue([], "failed", 0);
+  }
+};
 
 const deleteUserByIdAsync = async (req, res) => {
   let ids = req.params.ids;
   let result = await userservice.deleteUserByIdAsync(ids);
+  if (result.isSuccess) {
+    res.sendCommonValue({}, "success", 1);
+  } else {
+    res.sendCommonValue({}, "failed", 0);
+  }
+};
+
+const deleteUserByIdsAsync = async (req, res) => {
+  let ids = req.params.ids;
+  let result = await userservice.deleteUserByIdsAsync(ids);
   if (result.isSuccess) {
     res.sendCommonValue({}, "success", 1);
   } else {
@@ -159,8 +169,9 @@ module.exports = {
   addUserAsync,
   getUserAsync,
   deleteUserByIdAsync,
-  //getUserListAsync,
+  getUserListAsync,
   updateUserAsync,
+  deleteUserByIdsAsync
   //getUserByIdAsync,
   //getUserListByAccessAsync,
   //updatePasswordAsync

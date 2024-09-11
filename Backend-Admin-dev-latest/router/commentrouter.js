@@ -5,7 +5,6 @@ var router = express.Router();
 const { body, query, param } = require("express-validator");
 const { commonValidate } = require("../middleware/expressValidator");
 
-//var usercontroller = require("../controller/usercontroller");
 var commentcontroller = require("../controller/commentcontroller");
 
 /**
@@ -187,10 +186,6 @@ router.post(
         .optional()
         .isString()
         .withMessage("Not a valid CommentContent"),
-      body("CommentTime")
-        .optional()
-        .isDate()
-        .withMessage("Not a valid CommentTime"),
       body("UserID")
         
         .isInt({ allow_leading_zeroes: false, min: 1 })

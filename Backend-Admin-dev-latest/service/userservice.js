@@ -54,11 +54,30 @@ const deleteUserByIdAsync = async (id) => {
   return { isSuccess: false, message: "Fail to delete" };
 };
 
+const deleteUserByIdsAsync = async (ids) => {
+
+  //sql injection, don't recommend
+  //let sql = `Delete FROM user where id in (${ids})`;
+
+
+  // avoid sql injection
+  let idArray = ids.split(",")
+  let idsString = idArray.map((id) => `'${parseInt(id)}'`).join(",");
+  let sql1 = `Delete FROM user where id in (${idsString})`;
+
+  let [result] = await db.query(sql);
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "Delete successfully" };
+  }
+
+  return { isSuccess: false, message: "Fail to delete" };
+};
+
 //update
 const updateUserByIdAsync = async (user) => {
   // SQL query statement
   let sql = `UPDATE user SET username = ?, email = ?, address = ?, age = ?, gender = ?, avatar = ?, nickname = ?, access = ?,active = ? WHERE id = ?`;
-   // Executing the query
+  // Executing the query
   let result = await db.query(sql, [
     user.username,
     user.email,
@@ -69,7 +88,7 @@ const updateUserByIdAsync = async (user) => {
     user.nickname,
     user.access,
     user.active,
-    user.id // The ID should be at the end to match the WHERE clause
+    user.id, // The ID should be at the end to match the WHERE clause
   ]);
   if (result[0].affectedRows > 0) {
     return { isSuccess: true, message: "Update successful" };
@@ -77,45 +96,44 @@ const updateUserByIdAsync = async (user) => {
   return { isSuccess: false, message: "Fail to update" };
 };
 
-// var getUserListAsync = async (page, pageSize) => {
-//   let countSql = "SELECT count(*) total FROM user; ";
-//   let resultCount = await db.query(countSql);
-//   let total = resultCount[0][0].total;
-//   if (total == 0) {
-//     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
-//   }
-//   let sql = "SELECT * FROM user limit ? offset ? ;";
-//   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
+var getUserListAsync = async (page, pageSize) => {
+  let countSql = "SELECT count(*) total FROM user; ";
+  let resultCount = await db.query(countSql);
+  let total = resultCount[0][0].total;
+  if (total == 0) {
+    return { isSuccess: true, message: "", data: { items: [], total: 0 } };
+  }
+  let sql = "SELECT * FROM user limit ? offset ? ;";
+  let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
 
-//   let userlist = [];
-//   if (resultData[0].length > 0) {
-//     resultData[0].forEach((element) => {
-//       let user = { id: 0 };
-//       user.id = element.id;
-//       user.username = element.username;
-//       //user.password = element.password;
-//       user.email = element.email;
-//       user.address = element.address;
-//       user.age = element.age;
-//       user.gender = element.gender;
-//       user.avatar = element.avatar;
-//       user.access = element.access;
-//       userlist.push(user);
-//     });
-//   }
-//   return {
-//     isSuccess: true,
-//     message: "",
-//     data: { items: userlist, total: total },
-//   };
-// };
-
-
+  let userlist = [];
+  if (resultData[0].length > 0) {
+    resultData[0].forEach((element) => {
+      let user = { id: 0 };
+      user.id = element.id;
+      user.username = element.username;
+      //user.password = element.password;
+      user.email = element.email;
+      user.address = element.address;
+      user.age = element.age;
+      user.gender = element.gender;
+      user.avatar = element.avatar;
+      user.access = element.access;
+      userlist.push(user);
+    });
+  }
+  return {
+    isSuccess: true,
+    message: "",
+    data: { items: userlist, total: total },
+  };
+};
 
 module.exports = {
-  //getUserListAsync,
+  getUserListAsync,
   getUserbyNameAsync,
   addUserAsync,
   deleteUserByIdAsync,
   updateUserByIdAsync,
+  deleteUserByIdsAsync,
 };
