@@ -14,6 +14,7 @@ var getCommentListAsync = async (page, pageSize) => {
       ON user.id = coursecomments.UserID
       INNER JOIN courses
       ON courses.ID = coursecomments.CourseID
+      LIMIT ? OFFSET ?
     `;
     let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
   
