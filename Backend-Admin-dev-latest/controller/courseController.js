@@ -1,15 +1,39 @@
 const courseService = require("../service/courseService");
+const fs = require("fs");
+
+const logger =require("../common/logsetting")
 
 const createCourse = async (req, res) => {
   try {
     // Set a default TeacherID, for example, 1 or another existing teacher ID
     const defaultTeacherId = 1;
 
+    let avatarLocation = null;
+
+    if (req.body.Cover) {
+      // If an course is uploaded, save the course to the local directory public/images/course
+      // 移除MIME类型前缀
+      let base64Data = req.body.Cover.replace(/^data:image\/\w+;base64,/, "");
+      //const buffer = Buffer.from(base64Data, "binary");
+      const fileName = `course-${req.body.CourseName}.jpg`; // Use the CourseName as the filename
+      const filePath = `public/images/course/${fileName}`; // File save path
+      // Write the image to the file system
+      fs.writeFileSync(
+        filePath,
+        base64Data,
+        { encoding: "base64" },
+        (err) => {
+          logger.error('writeFileSync',err)
+        }
+      );
+      avatarLocation = filePath;
+    }
+
     const courseData = {
       CourseName: req.body.CourseName,
       Description: req.body.Description,
       CategoryID: req.body.CategoryID,
-      Cover: req.body.Cover,
+      Cover: avatarLocation,
       TeacherID: defaultTeacherId, // Use the default TeacherID
       PublishedAt: req.body.PublishedAt || new Date().toISOString(), // Use current date and time as the publish time
     };
@@ -53,10 +77,10 @@ const updateCourse = async (req, res) => {
 
 //Delete course by ID
 const deleteCourseById = async (req, res) => {
-    const courseId = parseInt(req.params.courseId);
-    const result = await courseService.deleteCourse(courseId);
+  const courseId = parseInt(req.params.courseId);
+  const result = await courseService.deleteCourse(courseId);
   res.status(result.isSuccess ? 200 : 400).json({
-        status: result.isSuccess ? 200 : 400,
+    status: result.isSuccess ? 200 : 400,
     message: result.message,
   });
 };
@@ -90,37 +114,31 @@ const getCourseById = async (req, res) => {
   }
 };
 
-
 const getAllCoursesByPage = async (req, res) => {
-    // obtain pagination parameters from query
-    const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
-    const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
-   
-    try {
-      // call getAllCoursesByPage from service layer and pass in the pagination params
-      const result = await courseService.getAllCoursesByPage(
-        page,
-        pageSize
-      );
-      // return the result obtained from service layer to front end
-      res.sendCommonValue(
-        {
-          items: result.data.items,
-          total: result.data.total,
-        },
-        result.message,
-        result.isSuccess ? 200 : 400
-      );
-    } catch (error) {
-      console.error("Error occurred in getAllCoursesByPage:", error);
-      res.status(500).send({
-        message: "Error occurred while fetching courses' information",
-        error: error.message,
-      });
-    }
-  };
-  
+  // obtain pagination parameters from query
+  const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
+  const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
 
+  try {
+    // call getAllCoursesByPage from service layer and pass in the pagination params
+    const result = await courseService.getAllCoursesByPage(page, pageSize);
+    // return the result obtained from service layer to front end
+    res.sendCommonValue(
+      {
+        items: result.data.items,
+        total: result.data.total,
+      },
+      result.message,
+      result.isSuccess ? 200 : 400
+    );
+  } catch (error) {
+    console.error("Error occurred in getAllCoursesByPage:", error);
+    res.status(500).send({
+      message: "Error occurred while fetching courses' information",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   createCourse,
@@ -128,5 +146,5 @@ module.exports = {
   deleteCourseById,
   getAllCourses,
   getCourseById,
-  getAllCoursesByPage
+  getAllCoursesByPage,
 };

@@ -13,9 +13,11 @@ const getCourseScheduleById = async (id) => {
 };
 
 const addCourseSchedule = async (courseScheduleData) => {
-  const { id, startDate, endDate, isPublished } = courseScheduleData;
+  const { id, startDate,endDate, CourseId, isPublished } = courseScheduleData;
+  let checkcourse="select count(*) from courseschedule where CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+  let checkcourse1="select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
   let sql =
-    "INSERT INTO courseschedule (id, startDate, endDate, isPublished) VALUES (?, ?, ?, ?)";
+    "INSERT INTO courseschedule (startDate, endDate, CourseId, isPublished) VALUES (?, ?, ?, ?,?)";
   let result = await db.query(sql, [id, startDate, endDate, isPublished]);
   return result[0].insertId;
 };
