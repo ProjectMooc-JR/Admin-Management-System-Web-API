@@ -99,8 +99,8 @@ app.use("/api/courses", courseRoutes);
 const chapterRoutes = require("./router/chapterRoutes");
 app.use("/api", chapterRoutes);
 
-// const courseScheduleRouter = require("./router/courseScheduleRouter");
-// app.use("/api/courseSchedule", courseScheduleRouter);
+const courseScheduleRouter = require("./router/courseScheduleRouter");
+app.use("/api/courseSchedule", courseScheduleRouter);
 
 //config courseCategoryRouter
 const courseCategoryRouter = require("./router/courseCategoryRouter");

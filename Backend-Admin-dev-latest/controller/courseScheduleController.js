@@ -4,7 +4,8 @@ const courseScheduleService = require("../service/courseScheduleService");
 
 const getCourseSchedulesAsync = async (req, res) => {
   try {
-    const courseSchedules = await courseScheduleService.getCourseSchedules();
+    const courseSchedules =
+      await courseScheduleService.getCourseSchedulesAsync();
     res.status(200).json({
       success: true,
       data: courseSchedules,
@@ -21,9 +22,8 @@ const getCourseSchedulesAsync = async (req, res) => {
 const getCourseScheduleByIdAsync = async (req, res) => {
   const { id } = req.params;
   try {
-    const courseSchedule = await courseScheduleService.getCourseScheduleById(
-      id
-    );
+    const courseSchedule =
+      await courseScheduleService.getCourseScheduleByIdAsync(id);
     if (courseSchedule) {
       res.status(200).json({
         success: true,
@@ -47,9 +47,8 @@ const getCourseScheduleByIdAsync = async (req, res) => {
 const addCourseScheduleAsync = async (req, res) => {
   try {
     const courseScheduleData = req.body;
-    const newCourseScheduleId = await courseScheduleService.addCourseSchedule(
-      courseScheduleData
-    );
+    const newCourseScheduleId =
+      await courseScheduleService.addCourseScheduleAsync(courseScheduleData);
     res.status(201).json({
       success: true,
       data: { id: newCourseScheduleId },
@@ -68,7 +67,7 @@ const updateCourseScheduleAsync = async (req, res) => {
   const { id } = req.params;
   const courseScheduleData = req.body;
   try {
-    const affectedRows = await courseScheduleService.updateCourseSchedule(
+    const affectedRows = await courseScheduleService.updateCourseScheduleAsync(
       id,
       courseScheduleData
     );
@@ -96,7 +95,9 @@ const updateCourseScheduleAsync = async (req, res) => {
 const deleteCourseScheduleAsync = async (req, res) => {
   const { id } = req.params;
   try {
-    const affectedRows = await courseScheduleService.deleteCourseSchedule(id);
+    const affectedRows = await courseScheduleService.deleteCourseScheduleAsync(
+      id
+    );
     if (affectedRows > 0) {
       res.status(200).json({
         success: true,
