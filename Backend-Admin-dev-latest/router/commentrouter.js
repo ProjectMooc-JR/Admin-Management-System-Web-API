@@ -93,7 +93,7 @@ router.get(
 
 /**
  * @openapi
- * '/api/comments/delete/{id}':
+ * '/api/comments/{id}':
  *  delete:
  *     tags:
  *     - Comments Controller
@@ -118,7 +118,7 @@ router.get(
  *        description: Server Error
  */
 router.delete(
-  "/delete/:id",
+  "/:id",
   commonValidate([
     param("id")
       .notEmpty()
