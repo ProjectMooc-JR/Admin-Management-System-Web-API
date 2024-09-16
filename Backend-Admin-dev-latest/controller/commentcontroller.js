@@ -49,7 +49,7 @@ const addCommentAsync = async (req, res) => {
   let result = await commentservice.addCommentAsync(comment);
 
   if (result.isSuccess) {
-    res.sendCommonValue([result], "success", 200);
+    res.sendCommonValue([result], "success", 201);
   } else {
     res.sendCommonValue([], "failed", 500);
   }

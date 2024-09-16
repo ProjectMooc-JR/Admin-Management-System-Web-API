@@ -156,7 +156,7 @@ const getAllCoursesByPage = async (req, res) => {
   const pageSize = parseInt(req.params.pageSize) || 10;
 
   try {
-      const result = await courseService.getAllCoursesByPage(
+      const result = await courseService.getAllCoursesByPage();
     res.status(result.isSuccess ? 200 : 500).json({
       isSuccess: result.isSuccess,
       message: result.isSuccess ? "Courses fetched successfully" : "Failed to fetch courses",

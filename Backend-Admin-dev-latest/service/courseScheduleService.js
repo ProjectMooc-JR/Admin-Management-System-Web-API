@@ -54,7 +54,7 @@ const getCourseScheduleByIdAsync = async (id) => {
   return result[0][0];
 };
 
-const addCourseSchedule = async (courseScheduleData) => {
+const addCourseScheduleAsync = async (courseScheduleData) => {
   const { id, startDate,endDate, CourseId, isPublished } = courseScheduleData;
   let checkcourse="select count(*) from courseschedule where CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
   let checkcourse1="select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
@@ -64,7 +64,7 @@ const addCourseSchedule = async (courseScheduleData) => {
   return result[0].insertId;
 };
 
-const deleteCourseSchedule = async (id) => {
+const deleteCourseScheduleAsync = async (id) => {
   let sql = "DELETE FROM courseschedule WHERE id = ?";
   let result = await db.query(sql, [id]);
   return result[0].affectedRows; // 返回受影响的行数
