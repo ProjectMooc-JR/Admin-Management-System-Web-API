@@ -97,8 +97,12 @@ const updateTeacherAsync = async (req, res) => {
 
 // 根据ID删除教师
 const deleteTeacherByIdAsync = async (req, res) => {
-  const id = parseInt(req.params.id);
-  const result = await teacherService.deleteTeacherByIdAsync(id);
+  // 举例：
+  // req.params.id会拿到“1,2,3”；
+  // 用split方法按照逗号进行分隔，返回一个字符串数组：["1", "2", "3"];
+  // 用map循环该数组中的每一个元素，转换成数字数组：[1, 2, 3]
+  const ids = req.params.id.split(",").map(Number);
+  const result = await teacherService.deleteTeacherByIdAsync(ids);
   res.sendCommonValue(
     result.data,
     result.message,

@@ -293,10 +293,11 @@ router.put(
  *     parameters:
  *      - name: id
  *        in: path
- *        description: Teacher ID
+ *        description: Teacher ID or Comma-separated list of Teacher IDs
  *        required: true
  *        schema:
- *          type: integer
+ *          type: string
+ *          example: "1,2,3"
  *     responses:
  *      200:
  *        description: Teacher deleted successfully
@@ -311,7 +312,8 @@ router.delete(
   commonValidate([
     param("id")
       .notEmpty()
-      .isInt({ allow_leading_zeroes: false })
+      // 正则表达式验证url中的id参数是否符合逗号分隔的数字样式
+      .matches(/^(\d+,?)+$/)
       .withMessage("Invalid teacher ID"),
   ]),
   teacherController.deleteTeacherByIdAsync
