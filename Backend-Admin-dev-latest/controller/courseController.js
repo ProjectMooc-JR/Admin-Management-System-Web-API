@@ -1,7 +1,7 @@
 const courseService = require("../service/courseService");
 const fs = require("fs");
 
-const logger =require("../common/logsetting")
+const logger = require("../common/logsetting");
 
 const createCourse = async (req, res) => {
   try {
@@ -17,14 +17,9 @@ const createCourse = async (req, res) => {
       const fileName = `course-${req.body.CourseName}.jpg`; // Use the CourseName as the filename
       const filePath = `public/images/course/${fileName}`; // File save path
       // Write the image to the file system
-      fs.writeFileSync(
-        filePath,
-        base64Data,
-        { encoding: "base64" },
-        (err) => {
-          logger.error('writeFileSync',err)
-        }
-      );
+      fs.writeFileSync(filePath, base64Data, { encoding: "base64" }, (err) => {
+        logger.error("writeFileSync", err);
+      });
       avatarLocation = filePath;
     }
 
@@ -68,7 +63,10 @@ const updateCourse = async (req, res) => {
       PublishedAt: req.body.PublishedAt,
     };
 
-    const updatedCourse = await courseService.updateCourseAsync(courseId, courseData);
+    const updatedCourse = await courseService.updateCourseAsync(
+      courseId,
+      courseData
+    );
 
     res.status(200).json({
       isSuccess: true,
@@ -87,12 +85,14 @@ const updateCourse = async (req, res) => {
 // Delete course by ID
 const deleteCourseById = async (req, res) => {
   try {
-  const courseId = parseInt(req.params.courseId);
+    const courseId = parseInt(req.params.courseId);
     const result = await courseService.deleteCourseAsync(courseId);
 
     res.status(result.isSuccess ? 200 : 500).json({
       isSuccess: result.isSuccess,
-      message: result.isSuccess ? "Course deleted successfully" : result.message,
+      message: result.isSuccess
+        ? "Course deleted successfully"
+        : result.message,
       data: {},
     });
   } catch (error) {
@@ -108,17 +108,18 @@ const deleteCourseById = async (req, res) => {
 const getAllCourses = async (req, res) => {
   try {
     const result = await courseService.getAsyncAllCourses();
-    res.status(result.isSuccess ? 200 : 500).json({
-      isSuccess: result.isSuccess,
-      message: result.isSuccess ? "Courses fetched successfully" : "Failed to fetch courses",
-      data: result.data,
-    });
+    res.sendCommonValue(
+      result.data,
+      result.message,
+      result.isSuccess ? 200 : 500
+    );
+    // res.status(result.isSuccess ? 200 : 500).json({
+    //   isSuccess: result.isSuccess,
+    //   message: result.isSuccess ? "Courses fetched successfully" : "Failed to fetch courses",
+    //   data: result.data,
+    // });
   } catch (error) {
-    res.status(500).json({
-      isSuccess: false,
-      message: error.message,
-      data: [],
-    });
+    res.sendCommonValue([], "fail", 500, 500);
   }
 };
 
@@ -156,10 +157,12 @@ const getAllCoursesByPage = async (req, res) => {
   const pageSize = parseInt(req.params.pageSize) || 10;
 
   try {
-      const result = await courseService.getAllCoursesByPage();
+    const result = await courseService.getAllCoursesByPage();
     res.status(result.isSuccess ? 200 : 500).json({
       isSuccess: result.isSuccess,
-      message: result.isSuccess ? "Courses fetched successfully" : "Failed to fetch courses",
+      message: result.isSuccess
+        ? "Courses fetched successfully"
+        : "Failed to fetch courses",
       data: {
         items: result.data.items,
         total: result.data.total,
