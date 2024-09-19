@@ -8,16 +8,17 @@ const { db } = require("../db/mysqldb.js");
 
 const getCourseSchedulesAsync = async (page, pageSize) => {
   // define a SQL script to count the total number of courseschedule in database
-  let countSql = "SELECT count(*) total FROM courseschedule;";
+  let countSql = "SELECT count(*) total FROM courseschedule";
   let [resultCount] = await db.query(countSql);
   // extract the total number of courseschedule from the query result
   let total = resultCount[0].total;
-  // if the total number of teachers is 0, return an empty list with a total of 0
+  // if the total number of coursescheduleis 0, return an empty list with a total of 0
   if (total == 0) {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
-  // Define the SQL script to receive teachers' data with pagination using LIMIT and OFFSET ← they are SQL script rules
-  let sql = "SELECT * FROM courseschedule LIMIT ? OFFSET ?;";
+  // Define the SQL script to receive courseSchedule' data with pagination using LIMIT and OFFSET ← they are SQL script rules
+  let sql =
+    "SELECT * FROM courseschedule INNER JOIN courses ON courseschedule.CourseID = courses.ID LIMIT ? OFFSET ?";
   // execute the pagination query and store the result in resultData
   // eg: p1:id=1 ~ id=10
   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
@@ -67,7 +68,7 @@ const addCourseScheduleAsync = async (courseScheduleData) => {
       .slice(0, 19)
       .replace("T", " ");
 
-    isPublished = isPublished ? true : false;
+    //isPublished = isPublished ? true : false;
 
     let sql =
       "INSERT INTO courseschedule (CourseID, StartDate, EndDate, IsPublished) VALUES (?, ?, ?, ?)";
@@ -92,7 +93,7 @@ const deleteCourseScheduleAsync = async (id) => {
 const updateCourseScheduleAsync = async (id, courseScheduleData) => {
   const { startDate, endDate, isPublished } = courseScheduleData;
   let sql =
-    "UPDATE courseschedule SET startDate = ?, endDate = ?, isPublished = ? WHERE id = ?";
+    "UPDATE courseschedule SET StartDate = ?, EndDate = ?, IsPublished = ? WHERE id = ?";
   let result = await db.query(sql, [startDate, endDate, isPublished, id]);
   return result[0].affectedRows; // 返回受影响的行数
 };

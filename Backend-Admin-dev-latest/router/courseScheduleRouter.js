@@ -15,7 +15,7 @@ router.use(express.json());
  *  get:
  *     tags:
  *     - Course Schedule Controller
- *     summary: get course schedule by id
+ *     summary: get all the course schedule
  *     description: get course schedule with pagination
  *     security:
  *     - BearerAuth: []
