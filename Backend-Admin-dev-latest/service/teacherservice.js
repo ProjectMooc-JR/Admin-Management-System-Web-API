@@ -115,9 +115,9 @@ const updateTeacherAsync = async (teacher) => {
 };
 
 // 删除教师
-const deleteTeacherByIdAsync = async (id) => {
-  let sql = "delete from teachers where id=?";
-  let [result] = await db.query(sql, [id]);
+const deleteTeacherByIdAsync = async (ids) => {
+  let sql = "delete from teachers where id IN (?)";
+  let [result] = await db.query(sql, [ids]);
   if (result.affectedRows > 0) {
     return { isSuccess: true, message: "Teacher deleted successfully" };
   }

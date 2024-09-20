@@ -158,7 +158,7 @@ router.put('/:courseId', commonValidate(courseValidationRules), courseController
  *      500:
  *        description: Server Error
  */
-router.delete('/:courseId', courseController.deleteCourseById);
+router.delete('/:courseId', commonValidate(courseValidationRules), courseController.deleteCourseById);
 
 // Get a course by ID
 /**
@@ -216,6 +216,75 @@ router.delete('/:courseId', courseController.deleteCourseById);
  *        description: Server Error
  */
 router.get('/:courseId', courseController.getCourseById);
+
+
+/**
+ * @openapi
+ * '/api/courses':
+ *  get:
+ *     tags:
+ *     - Course Controller
+ *     summary: Get all courses with pagination
+ *     security:
+ *     - BearerAuth: []
+ *     description: Retrieve a list of courses with pagination
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         required: false
+ *         description: The page number to retrieve
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         required: false
+ *         description: The number of courses per page
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved courses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isSuccess:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           CourseName:
+ *                             type: string
+ *                           Description:
+ *                             type: string
+ *                           CategoryID:
+ *                             type: integer
+ *                           Cover:
+ *                             type: string
+ *                           PublishedAt:
+ *                             type: string
+ *                             format: date-time
+ *                     total:
+ *                       type: integer
+ *                       description: The total number of courses
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Server error
+ */
+router.get("/", courseController.getAllCourses);
 
 router.get(
     "/:page/:pageSize",

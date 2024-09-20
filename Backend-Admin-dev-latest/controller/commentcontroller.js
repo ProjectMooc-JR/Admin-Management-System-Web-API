@@ -12,9 +12,9 @@ const getCommentListAsync = async (req, res) => {
     let pageSize = parseInt(req.params.pageSize);
     let result = await commentservice.getCommentListAsync(page, pageSize);
     if (result.isSuccess) {
-      res.sendCommonValue(result.data, "success", 1);
+      res.sendCommonValue(result.data, "success", 200);
     } else {
-      res.sendCommonValue([], "failed", 0);
+      res.sendCommonValue([], "failed", 500);
     }
 };
 
@@ -24,9 +24,9 @@ const getCommentByIdAsync = async (req, res) => {
     let result = await commentservice.getCommentByIdAsync(id);
     
     if (result.isSuccess) {
-      res.sendCommonValue([result.data], "success", 1);
+      res.sendCommonValue([result.data], "success", 200);
     } else {
-      res.sendCommonValue([], "failed", 0);
+      res.sendCommonValue([], "failed", 500);
     }
 }
 
@@ -34,8 +34,8 @@ const getCommentByIdAsync = async (req, res) => {
 const deleteCommentByIdAsync = async (req, res) => {
     let id = parseInt(req.params.id);
     let result = await commentservice.deleteCommentByIdAsync(id);
-    return (result.isSuccess) ? res.sendCommonValue([], "success", 1)
-      : res.sendCommonValue([], "failed", 0);
+    return (result.isSuccess) ? res.sendCommonValue([], "success", 200)
+      : res.sendCommonValue([], "failed", 500);
 };
 
 const addCommentAsync = async (req, res) => {
@@ -49,7 +49,7 @@ const addCommentAsync = async (req, res) => {
   let result = await commentservice.addCommentAsync(comment);
 
   if (result.isSuccess) {
-    res.sendCommonValue([result], "success", 200);
+    res.sendCommonValue([result], "success", 201);
   } else {
     res.sendCommonValue([], "failed", 500);
   }

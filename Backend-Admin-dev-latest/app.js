@@ -12,11 +12,11 @@ bcrypt.genSalt(10).then((data) => {
   console.log(data);
 });
 
-// // 设置静态文件目录
-// app.use(express.static("public"));
+// 设置静态文件目录
+app.use(express.static("public"));
 //setup static file directory
-// const path=require("path")
-// app.use(express.static(path.join(__dirname,'public')))
+const path=require("path")
+app.use(express.static(path.join(__dirname,'public')))
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "success", message: "backend run success" });

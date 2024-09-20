@@ -56,38 +56,70 @@ const getCourseScheduleByIdAsync = async (id) => {
 };
 
 const addCourseScheduleAsync = async (courseScheduleData) => {
-  try {
-    console.log(courseScheduleData);
-    let { courseId, startDate, endDate, isPublished } = courseScheduleData;
-    const formattedStartDate = new Date(startDate)
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-    const formattedEndDate = new Date(endDate)
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
+  //   try {
+  //     console.log(courseScheduleData);
+  //     let { courseId, startDate, endDate, isPublished } = courseScheduleData;
+  //     const formattedStartDate = new Date(startDate)
+  //       .toISOString()
+  //       .slice(0, 19)
+  //       .replace("T", " ");
+  //     const formattedEndDate = new Date(endDate)
+  //       .toISOString()
+  //       .slice(0, 19)
+  //       .replace("T", " ");
 
-    //isPublished = isPublished ? true : false;
+  //     //isPublished = isPublished ? true : false;
 
-    let sql =
-      "INSERT INTO courseschedule (CourseID, StartDate, EndDate, IsPublished) VALUES (?, ?, ?, ?)";
-    let result = await db.query(sql, [
-      courseId,
-      formattedStartDate,
-      formattedEndDate,
-      isPublished,
-    ]);
-    return result[0].insertId;
-  } catch (e) {
-    console.log(e);
+  //     let sql =
+  //       "INSERT INTO courseschedule (CourseID, StartDate, EndDate, IsPublished) VALUES (?, ?, ?, ?)";
+  //     let result = await db.query(sql, [
+  //       courseId,
+  //       formattedStartDate,
+  //       formattedEndDate,
+  //       isPublished,
+  //     ]);
+  //     return result[0].insertId;
+  //   } catch (e) {
+  //     console.log(e);
+
+  const { id, startDate, endDate, CourseId, isPublished } = courseScheduleData;
+  let checkcourse = "";
+  let params = [];
+  if (id > 0) {
+    checkcourse =
+      "select count(*) from courseschedule where id<>? and  CourseID=? and (StartDate<=? or EndDate>=?) and (StartDate<=? or EndDate>=?)";
+    params = [id, CourseId, startDate, startDate, endDate, endDate];
+  } else {
+    checkcourse =
+      "select count(*) from courseschedule where CourseID=? and (StartDate<=? or EndDate>=?) and (StartDate<=? or EndDate>=?)";
+    params = [CourseId, startDate, startDate, endDate, endDate];
   }
+
+  let { row } = await db.query(checkcourse, params);
+  if (parseInt(row[0]) > 0) {
+    return { isSuccess: false, message: "" };
+  }
+
+  let sql =
+    "INSERT INTO courseschedule (StartDate, EndDate, CourseID, isPublished) VALUES (?, ?, ?, ?)";
+  let result = await db.query(sql, [id, startDate, endDate, isPublished]);
+  return result[0].insertId;
 };
 
 const deleteCourseScheduleAsync = async (id) => {
-  let sql = "DELETE FROM courseschedule WHERE id = ?";
-  let result = await db.query(sql, [id]);
-  return result[0].affectedRows; // 返回受影响的行数
+  try {
+    let sql = "DELETE FROM courseschedule WHERE id = ?";
+    let result = await db.query(sql, [id]);
+    if (result[0].affectedRows > 0) {
+      return { isSuccess: true, message: "Delete successful" }; // 返回操作成功的消息
+    } else {
+      return { isSuccess: false, message: "No rows affected, delete failed" }; // 返回操作失败的消息
+    }
+  } catch (error) {
+    // 捕获并处理错误
+    console.error(error);
+    return { isSuccess: false, message: "Error occurred while deleting" }; // 返回错误消息
+  }
 };
 
 const updateCourseScheduleAsync = async (id, courseScheduleData) => {
