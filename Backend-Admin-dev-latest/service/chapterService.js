@@ -152,6 +152,47 @@ const markChapterAsCompletedAsync = async (chapterId) => {
   }
 };
 
+const getAllChaptersByPaginationAsync = async (courseId, page = 1, pageSize = 10) => {
+    // Query to count the total number of chapters for the course
+    const countSql = "SELECT count(*) as total FROM coursechapters WHERE CourseID = ?;";
+    let [resultCount] = await db.query(countSql, [courseId]);
+
+    let total = resultCount[0].total;
+
+    if (total === 0) {
+        return { isSuccess: true, message: "", data: { items: [], total: 0 } };
+    }
+
+    // Query to retrieve chapters with pagination
+    const query = `
+        SELECT * FROM coursechapters 
+        WHERE CourseID = ? 
+        ORDER BY ChapterOrder 
+        LIMIT ? OFFSET ?;
+    `;
+
+    try {
+        const [rows] = await db.query(query, [courseId, pageSize, (page - 1) * pageSize]);
+        const chapterList = rows.map(chapter => ({
+            id: chapter.ID,
+            chapterName: chapter.ChapterTitle,
+            description: chapter.ChapterDescription,
+            course: chapter.CourseID,
+            teacher: chapter.TeacherID,
+            publishedAt: chapter.PublishedAt
+        }));
+
+        return {
+            isSuccess: true,
+            message: "successful",
+            data: { items: chapterList, total: total }
+        };
+    } catch (error) {
+        throw new Error(`Error fetching chapters with pagination: ${error.message}`);
+    }
+};
+
+
 module.exports = {
   addChapterAsync,
   getAllChaptersByCourseIdAsync,
@@ -159,4 +200,5 @@ module.exports = {
   updateChapterByCourseAndOrderAsync,
   deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
+  getAllChaptersByPaginationAsync
 };

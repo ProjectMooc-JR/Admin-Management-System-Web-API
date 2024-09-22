@@ -135,6 +135,42 @@ const markChapterAsCompletedAsync = async (req, res) => {
   );
 };
 
+const getChaptersByCourseIdWithPaginationAsync = async (req, res) => {
+    const courseId = parseInt(req.params.courseId);
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    try {
+        // 调用修改后的 service 层函数
+        const result = await chapterService.getAllChaptersByPaginationAsync(courseId, page, pageSize);
+
+        if (result.isSuccess) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    chapters: result.data.items,
+                    total: result.data.total,
+                    currentPage: page,
+                    totalPages: Math.ceil(result.data.total / pageSize),
+                },
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: "No chapters found",
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching paginated chapters:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+};
+
+
+
 // Export functions
 module.exports = {
   addChapterAsync,
@@ -143,4 +179,5 @@ module.exports = {
   updateChapterByCourseAndOrderAsync,
   deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
+  getChaptersByCourseIdWithPaginationAsync
 };

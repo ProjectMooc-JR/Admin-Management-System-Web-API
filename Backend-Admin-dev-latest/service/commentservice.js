@@ -21,7 +21,7 @@ var getCommentListAsync = async (page, pageSize) => {
     let commentlist = [];
     if (resultData[0].length > 0) {
       resultData[0].forEach((element) => {
-        let comment = { ID: 0 };
+        let comment = {  };
         comment.id = element.id;
         comment.username = element.username;
         comment.CourseName = element.CourseName;
