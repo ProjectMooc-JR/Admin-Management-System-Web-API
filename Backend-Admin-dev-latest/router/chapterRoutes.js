@@ -1,17 +1,28 @@
 const express = require("express");
 const chapterController = require("../controller/chapterController");
 const router = express.Router();
-const { check } = require('express-validator');
-const { commonValidate } = require('../middleware/expressValidator');
+const { check } = require("express-validator");
+const { commonValidate } = require("../middleware/expressValidator");
 
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/videos/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "_" + file.originalname);
+  },
+});
+const upload = multer({ storage: storage })
 
 const chapterValidationRules = [
-    check('ChapterTitle').notEmpty().withMessage('Chapter Title is required'),
-    check('ChapterDescription').notEmpty().withMessage('Chapter Description is required'),
-    check('VideoURL').isURL().withMessage('A valid Video URL is required'),
-    check('ChapterOrder').isInt().withMessage('Chapter Order must be an integer')
+  check("ChapterTitle").notEmpty().withMessage("Chapter Title is required"),
+  //   check("ChapterDescription")
+  //     .notEmpty()
+  //     .withMessage("Chapter Description is required"),
+  //   check("VideoURL").isURL().withMessage("A valid Video URL is required"),
+  check("ChapterOrder").isInt().withMessage("Chapter Order must be an integer"),
 ];
-
 
 // Add a new chapter
 /**
@@ -70,7 +81,12 @@ const chapterValidationRules = [
  *         description: Server Error
  */
 
-router.post('/:courseId/chapters', commonValidate(chapterValidationRules), chapterController.addChapterAsync);
+router.post(
+  "/",
+  upload.single("file"),
+  chapterValidationRules,
+  chapterController.addChapterAsync
+);
 
 // Get all chapters for a course
 /**
@@ -122,14 +138,17 @@ router.post('/:courseId/chapters', commonValidate(chapterValidationRules), chapt
  *       500:
  *         description: Server Error
  */
-router.get('/:courseId/chapters', chapterController.getAllChaptersByCourseIdAsync);
+router.get(
+  "/:courseId/chapters",
+  chapterController.getAllChaptersByCourseIdAsync
+);
 
 // get chapter by id
 /**
  * @swagger
  * /api/courses/{courseId}/chapters/{chapterId}:
  *   get:
- *     tags: 
+ *     tags:
  *       - Chapter Controller
  *     summary: Get a chapter by ID
  *     description: Retrieve a specific chapter by its ID
@@ -176,7 +195,10 @@ router.get('/:courseId/chapters', chapterController.getAllChaptersByCourseIdAsyn
  *       500:
  *         description: Server error
  */
-router.get('/:courseId/chapters/:chapterId', chapterController.getChapterByIdAsync);
+router.get(
+  "/:courseId/chapters/:chapterId",
+  chapterController.getChapterByIdAsync
+);
 
 // update chapter by id
 /**
@@ -259,7 +281,10 @@ router.get('/:courseId/chapters/:chapterId', chapterController.getChapterByIdAsy
  *                   example: Chapter not found
  */
 
-router.put("/:courseId/chapters/:chapterOrder", chapterController.updateChapterByCourseAndOrderAsync);
+router.put(
+  "/:courseId/chapters/:chapterOrder",
+  chapterController.updateChapterByCourseAndOrderAsync
+);
 
 // delete chapter by course ID and chapter order
 /**
@@ -320,9 +345,10 @@ router.put("/:courseId/chapters/:chapterOrder", chapterController.updateChapterB
  *                   example: Chapter not found
  */
 
-
-
-router.delete(":courseId/chapters/:chapterOrder", chapterController.deleteChapterByCourseAndOrderAsync);
+router.delete(
+  ":courseId/chapters/:chapterOrder",
+  chapterController.deleteChapterByCourseAndOrderAsync
+);
 
 // Get chapters with pagination
 /**
@@ -414,8 +440,10 @@ router.delete(":courseId/chapters/:chapterOrder", chapterController.deleteChapte
  *       500:
  *         description: Server error
  */
-router.get('/:courseId/chapters', chapterController.getChaptersByCourseIdWithPaginationAsync);
-
+router.get(
+  "/:courseId/chapters",
+  chapterController.getChaptersByCourseIdWithPaginationAsync
+);
 
 // router.get(
 //   '/:courseId/chapters',
@@ -434,10 +462,10 @@ router.get('/:courseId/chapters', chapterController.getChaptersByCourseIdWithPag
 
 module.exports = router;
 
-
 // Progress tracking
-router.put("/courses/:courseId/chapters/:chapterId/complete", chapterController.markChapterAsCompletedAsync);
-
+router.put(
+  "/courses/:courseId/chapters/:chapterId/complete",
+  chapterController.markChapterAsCompletedAsync
+);
 
 module.exports = router;
-

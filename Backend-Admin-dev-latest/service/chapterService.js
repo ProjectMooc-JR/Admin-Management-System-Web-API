@@ -4,8 +4,8 @@ const { db } = require("../db/mysqldb.js");
 const addChapterAsync = async (chapter) => {
     const query = `
         INSERT INTO coursechapters 
-        (CourseID, ChapterTitle, ChapterDescription, VideoURL, isCompleted, ChapterOrder) 
-        VALUES (?, ?, ?, ?, ?, ?)
+        (CourseID, ChapterTitle, ChapterDescription, VideoURL, ChapterOrder) 
+        VALUES (?, ?, ?, ?, ?)
     `;
     try {
         const [result] = await db.query(query, [
@@ -13,7 +13,6 @@ const addChapterAsync = async (chapter) => {
             chapter.ChapterTitle,
             chapter.ChapterDescription,
             chapter.VideoURL,
-            chapter.isCompleted,
             chapter.ChapterOrder,
         ]);
         return { isSuccess: true, data: result };

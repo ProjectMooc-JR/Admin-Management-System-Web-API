@@ -15,8 +15,8 @@ bcrypt.genSalt(10).then((data) => {
 // 设置静态文件目录
 app.use(express.static("public"));
 //setup static file directory
-const path=require("path")
-app.use(express.static(path.join(__dirname,'public')))
+// const path = require("path");
+// app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "success", message: "backend run success" });
@@ -53,6 +53,7 @@ app.use(
   jwt({ secret: jwtConfig.secret, algorithms: jwtConfig.algorithms }).unless({
     path: [
       "/",
+      /^\/public\/.*/,
       "/api-docs",
       "/api/auth/login",
       "/api/auth/loginOut",
@@ -97,7 +98,7 @@ app.use("/api/courses", courseRoutes);
 
 //config chapterrouter
 const chapterRoutes = require("./router/chapterRoutes");
-app.use("/api", chapterRoutes);
+app.use("/api/chapters", chapterRoutes);
 
 const courseScheduleRouter = require("./router/courseScheduleRouter");
 app.use("/api/courseSchedule", courseScheduleRouter);
