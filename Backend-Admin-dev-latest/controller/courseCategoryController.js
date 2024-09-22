@@ -19,7 +19,11 @@ const addCourseCategoryAsync = async (req, res) => {
 
 const getAllCourseCategoryAsync = async (req, res) => {
   const result = await courseCategoryService.getAllCourseCategoryAsync();
-  res.sendCommonValue(result.data, result.msg, result.isSuccess ? 200 : 400);
+  res.sendCommonValue(
+    { items: result.data, total: result.data.length },
+    result.msg,
+    result.isSuccess ? 200 : 400
+  );
 };
 
 const getCourseCategoryByIdAsync = async (req, res) => {

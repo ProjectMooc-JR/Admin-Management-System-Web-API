@@ -40,10 +40,10 @@ const deleteCommentByIdAsync = async (req, res) => {
 
 const addCommentAsync = async (req, res) => {
   let comment ={
-    CourseID: req.body.CourseID,
+    CourseID: req.body.Course_id,
     CommentContent: req.body.CommentContent,
     CommentTime: req.body.CommentTime,
-    UserID: req.body.UserID
+    UserID: req.body.User_id
   };
 
   let result = await commentservice.addCommentAsync(comment);
