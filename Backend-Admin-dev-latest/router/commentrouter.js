@@ -93,7 +93,7 @@ router.get(
 
 /**
  * @openapi
- * '/api/comments/delete/{id}':
+ * '/api/comments/{id}':
  *  delete:
  *     tags:
  *     - Comments Controller
@@ -118,7 +118,7 @@ router.get(
  *        description: Server Error
  */
 router.delete(
-  "/delete/:id",
+  "/:id",
   commonValidate([
     param("id")
       .notEmpty()
@@ -178,18 +178,23 @@ router.delete(
 router.post(
     "/",
     commonValidate([
-      body("CourseID")
+     
+      // body("Course_id")
+      // //body("CourseID")
         
-        .isInt({ allow_leading_zeroes: false})
-        .withMessage("Not a valid CourseID"),
+      //   .isInt({ allow_leading_zeroes: false})
+      //   .withMessage("Not a valid CourseID"),
       body("CommentContent")
         .optional()
         .isString()
         .withMessage("Not a valid CommentContent"),
-      body("UserID")
+      body("User_id").notEmpty().withMessage("User_id is required"), 
+      body("Course_id").notEmpty().withMessage("Course_id is required"),
+      // body("User_id")  
+      //body("UserID")
         
-        .isInt({ allow_leading_zeroes: false, min: 1 })
-        .withMessage("Not a valid UserID"),
+        // .isInt({ allow_leading_zeroes: false, min: 1 })
+        // .withMessage("Not a valid UserID"),
     ]),
     commentcontroller.addCommentAsync
 );

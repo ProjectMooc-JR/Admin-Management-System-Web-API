@@ -55,32 +55,28 @@ const getCourseScheduleByIdAsync = async (id) => {
 };
 
 const addCourseScheduleAsync = async (courseScheduleData) => {
-  try {
-    console.log(courseScheduleData);
-    let { courseId, startDate, endDate, isPublished } = courseScheduleData;
-    const formattedStartDate = new Date(startDate)
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-    const formattedEndDate = new Date(endDate)
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-
-    isPublished = isPublished ? true : false;
-
-    let sql =
-      "INSERT INTO courseschedule (CourseID, StartDate, EndDate, IsPublished) VALUES (?, ?, ?, ?)";
-    let result = await db.query(sql, [
-      courseId,
-      formattedStartDate,
-      formattedEndDate,
-      isPublished,
-    ]);
-    return result[0].insertId;
-  } catch (e) {
-    console.log(e);
+  const { id, startDate, endDate, CourseId, isPublished } = courseScheduleData;
+  let checkcourse = "";
+  let params = [];
+  if (id > 0) {
+    checkcourse =
+      "select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+    params = [id, CourseId, startDate, startDate, endDate, endDate];
+  } else {
+    checkcourse =
+      "select count(*) from courseschedule where CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+    params = [CourseId, startDate, startDate, endDate, endDate];
   }
+
+  let { row } = await db.query(checkcourse, params);
+  if (parseInt(row[0]) > 0) {
+    return { isSuccess: false, message: "" };
+  }
+
+  let sql =
+    "INSERT INTO courseschedule (startDate, endDate, CourseId, isPublished) VALUES (?, ?, ?, ?,?)";
+  let result = await db.query(sql, [id, startDate, endDate, isPublished]);
+  return result[0].insertId;
 };
 
 const deleteCourseScheduleAsync = async (id) => {

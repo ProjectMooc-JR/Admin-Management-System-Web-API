@@ -284,7 +284,7 @@ router.get('/:courseId', courseController.getCourseById);
  *       500:
  *         description: Server error
  */
-router.get("/", courseController.getAllCoursesByPage);
+router.get("/", courseController.getAllCourses);
 
 router.get(
     "/:page/:pageSize",
