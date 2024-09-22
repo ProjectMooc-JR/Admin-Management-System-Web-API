@@ -324,6 +324,116 @@ router.put("/:courseId/chapters/:chapterOrder", chapterController.updateChapterB
 
 router.delete(":courseId/chapters/:chapterOrder", chapterController.deleteChapterByCourseAndOrderAsync);
 
+// Get chapters with pagination
+/**
+ * @openapi
+ * /api/courses/{courseId}/chapters:
+ *   get:
+ *     tags:
+ *       - Chapter Controller
+ *     summary: Get chapters with pagination
+ *     description: Retrieve chapters of a course with pagination
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the course to get chapters for
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of chapters per page
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved chapters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isSuccess:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Successful"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           ChapterTitle:
+ *                             type: string
+ *                             example: "Introduction to Python"
+ *                           ChapterDescription:
+ *                             type: string
+ *                             example: "This chapter introduces the basics of Python programming."
+ *                           CourseID:
+ *                             type: integer
+ *                             example: 14
+ *                           VideoURL:
+ *                             type: string
+ *                             example: "https://example.com/python-intro.mp4"
+ *                           isCompleted:
+ *                             type: boolean
+ *                             example: false
+ *                           ChapterOrder:
+ *                             type: integer
+ *                             example: 1
+ *                     total:
+ *                       type: integer
+ *                       example: 12
+ *                       description: The total number of chapters
+ *                     currentPage:
+ *                       type: integer
+ *                       example: 1
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 2
+ *       400:
+ *         description: Invalid request
+ *       404:
+ *         description: Course not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:courseId/chapters', chapterController.getChaptersByCourseIdWithPaginationAsync);
+
+
+// router.get(
+//   '/:courseId/chapters',
+//   commonValidate([
+//     query('page')
+//       .optional()
+//       .isInt({ min: 1 })
+//       .withMessage('Not a valid page'),
+//     query('pageSize')
+//       .optional()
+//       .isInt({ min: 1 })
+//       .withMessage('Not a valid page size'),
+//   ]),
+//   chapterController.getChaptersByCourseIdWithPaginationAsync
+// );
+
+module.exports = router;
+
 
 // Progress tracking
 router.put("/courses/:courseId/chapters/:chapterId/complete", chapterController.markChapterAsCompletedAsync);
