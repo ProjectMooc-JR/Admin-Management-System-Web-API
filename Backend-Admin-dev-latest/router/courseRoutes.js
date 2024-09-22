@@ -5,7 +5,8 @@ const { commonValidate } = require('../middleware/expressValidator'); // Import 
 const { check } = require('express-validator'); // Import the check function for validation
 const { param } = require('express-validator');
 
-
+const multer  = require('multer')
+const upload = multer({ dest: 'public/videos/' })
 
 // Define validation rules for creating a new course
 const courseValidationRules = [
@@ -69,7 +70,7 @@ const courseValidationRules = [
  *      500:
  *        description: Server Error
  */
-router.post('/', commonValidate(courseValidationRules), courseController.createCourse);
+router.post('/', upload.single('file'),courseController.createCourse);
 
 // Update a course
 /**

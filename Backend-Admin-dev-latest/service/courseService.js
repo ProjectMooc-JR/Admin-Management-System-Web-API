@@ -19,7 +19,8 @@ const getTeacherIdByUserIdAsync = async (userId) => {
 
 // Use async/await to add a new course
 const addCourseAsync = async (course) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } = course;
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } =
+    course;
 
   // SQL query to insert a new course
   const query = `
@@ -49,7 +50,8 @@ const addCourseAsync = async (course) => {
 
 // Update a course based on the course ID and the updated course data
 const updateCourseAsync = async (courseId, updatedCourse) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } = updatedCourse;
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } =
+    updatedCourse;
   const query = `
         UPDATE Courses 
         SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ? 
@@ -81,17 +83,23 @@ const deleteCourseAsync = async (courseId) => {
     await connection.beginTransaction();
 
     // Delete related chapters
-    await connection.query('DELETE FROM coursechapters WHERE CourseID = ?', [courseId]);
+    await connection.query("DELETE FROM coursechapters WHERE CourseID = ?", [
+      courseId,
+    ]);
 
     // Delete related comments
-    await connection.query('DELETE FROM coursecomments WHERE CourseID = ?', [courseId]);
+    await connection.query("DELETE FROM coursecomments WHERE CourseID = ?", [
+      courseId,
+    ]);
 
     // Delete the course
-    const result = await connection.query('DELETE FROM Courses WHERE ID = ?', [courseId]);
+    const result = await connection.query("DELETE FROM Courses WHERE ID = ?", [
+      courseId,
+    ]);
 
     // If no course was found to delete, throw an error
     if (result.affectedRows === 0) {
-      throw new Error('Course not found');
+      throw new Error("Course not found");
     }
 
     // Commit the transaction
@@ -100,9 +108,13 @@ const deleteCourseAsync = async (courseId) => {
     return { isSuccess: true };
   } catch (error) {
     // Check if the error is due to foreign key constraints
-    if (error.code === 'ER_ROW_IS_REFERENCED_2') { // MySQL foreign key constraint error code
+    if (error.code === "ER_ROW_IS_REFERENCED_2") {
+      // MySQL foreign key constraint error code
       await connection.rollback(); // Rollback the transaction
-      return { isSuccess: false, message: 'Cannot delete due to foreign key constraints' };
+      return {
+        isSuccess: false,
+        message: "Cannot delete due to foreign key constraints",
+      };
     } else {
       // For any other errors, rollback the transaction
       await connection.rollback();
@@ -126,11 +138,11 @@ const getAsyncAllCourses = async () => {
 };
 
 // Get courses with pagination
-const getAllCoursesAsync = async (page, pageSize, includeTeacherData = false) => {
+const getAllCoursesAsync = async (page, pageSize) => {
   // Define a SQL script to count the total number of courses in the database
   let countSql = "SELECT count(*) total FROM courses;";
   let [resultCount] = await db.query(countSql);
-  
+
   // Extract the total number of courses from the query result
   let total = resultCount[0].total;
 
@@ -141,18 +153,15 @@ const getAllCoursesAsync = async (page, pageSize, includeTeacherData = false) =>
 
   // Define the SQL script to retrieve courses' data with pagination using LIMIT and OFFSET
   let sql;
-  if (includeTeacherData) {
-    sql = `
-      SELECT c.ID, c.CourseName, c.Description, c.CategoryID, c.Cover, c.TeacherID, c.PublishedAt,
+  sql = `
+      SELECT c.ID, c.CourseName, c.Description, g.CategoryName, c.Cover, c.TeacherID, c.PublishedAt,
              t.User_id, u.username 
       FROM courses AS c 
       INNER JOIN teachers AS t ON c.TeacherID = t.ID 
       INNER JOIN user AS u ON t.User_id = u.ID 
+      INNER Join coursecategories g on g.ID=c.CategoryID
       LIMIT ? OFFSET ?;
     `;
-  } else {
-    sql = "SELECT * FROM courses LIMIT ? OFFSET ?;";
-  }
 
   // Execute the pagination query and store the result in resultData
   try {
@@ -160,23 +169,42 @@ const getAllCoursesAsync = async (page, pageSize, includeTeacherData = false) =>
     let courseList = [];
 
     // If search result is not empty, process each course and assign its values to an object
+    let chapterItems;
     if (rows.length > 0) {
+      let cidArray = [];
       rows.forEach((field) => {
+        cidArray.push(field.ID);
         let course = {
           id: field.ID,
           CourseName: field.CourseName,
           Description: field.Description,
-          CategoryID: field.CategoryID,
+          CategoryName: field.CategoryName,
           Cover: field.Cover,
           TeacherID: field.TeacherID,
           PublishedAt: field.PublishedAt,
-          username: includeTeacherData ? field.username : undefined,
+          username: field.username,
         };
         // Add the course object to the courseList array
         courseList.push(course);
       });
+
+      let ids = cidArray.join(",");
+
+      let sqlchapter = `select ChapterTitle, ChapterDescription, CourseID, VideoURL,ChapterNumber  from coursechapters where CourseID in(${ids})`;
+      const [chaptersrows] = await db.query(sqlchapter);
+      chapterItems = chaptersrows;
     }
 
+    if (chapterItems && chapterItems.length > 0) {
+      courseList.forEach((x) => {
+        let coursetChapterItems = chapterItems.filter(
+          (y) => y.CourseID == x.id
+        );
+        x.chapterItems = coursetChapterItems.sort(
+          (a, b) => a.ChapterNumber - b.ChapterNumber
+        );
+      });
+    }
     // Return the result object containing the list of courses and the total count
     return {
       isSuccess: true,
@@ -209,5 +237,5 @@ module.exports = {
   deleteCourseAsync,
   getAsyncAllCourses,
   getCourseByIdAsync,
-  getAllCoursesAsync // 带分页功能的课程查询方法
+  getAllCoursesAsync, // 带分页功能的课程查询方法
 };

@@ -1,6 +1,7 @@
 const courseService = require("../service/courseService");
 const fs = require("fs");
 
+
 const logger = require("../common/logsetting");
 
 const createCourse = async (req, res) => {
@@ -8,7 +9,8 @@ const createCourse = async (req, res) => {
     const defaultTeacherId = 1;
 
     let avatarLocation = null;
-
+    let file = req.file;
+    console.log("file", req);
     if (req.body.Cover) {
       // If an course is uploaded, save the course to the local directory public/images/course
       // 移除MIME类型前缀
@@ -157,24 +159,39 @@ const getAllCoursesByPage = async (req, res) => {
   const pageSize = parseInt(req.params.pageSize) || 10;
 
   try {
-    const result = await courseService.getAllCoursesByPage();
-    res.status(result.isSuccess ? 200 : 500).json({
-      isSuccess: result.isSuccess,
-      message: result.isSuccess
-        ? "Courses fetched successfully"
-        : "Failed to fetch courses",
-      data: {
-        items: result.data.items,
-        total: result.data.total,
-      },
-    });
+    const result = await courseService.getAllCoursesAsync(page, pageSize);
+    if (result.isSuccess) {
+      res.sendCommonValue(
+        {
+          items: result.data.items,
+
+          total: result.data.total,
+        },
+        "Courses fetched successfully",
+        200
+      );
+    } else {
+      res.sendCommonValue({}, "Failed to fetch courses", 500);
+    }
+    // res.status(result.isSuccess ? 200 : 500).json({
+    //   isSuccess: result.isSuccess,
+    //   message: result.isSuccess
+    //     ? "Courses fetched successfully"
+    //     : "Failed to fetch courses",
+    //   data: {
+    //     items: result.data.items,
+    //     total: result.data.total,
+    //   },
   } catch (error) {
-    console.error("Error occurred in getAllCoursesByPage:", error);
-    res.status(500).json({
-      isSuccess: false,
-      message: "Error occurred while fetching courses' information",
-      data: {},
-    });
+    console.error("Error occurred in getAllCoursesAsync:", error); //need to save log
+
+    // res.status(500).json({
+    //   isSuccess: false,
+    //   message: "Error occurred while fetching courses' information",
+    //   data: {},
+    // });
+
+    res.sendCommonValue({}, "Error occurred while fetching courses", 500, 500);
   }
 };
 
