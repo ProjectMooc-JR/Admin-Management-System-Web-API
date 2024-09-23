@@ -3,6 +3,16 @@ const fs = require("fs");
 
 
 const logger = require("../common/logsetting");
+const { get } = require("http");
+
+const getTeachers = async (req, res) => {
+  try {
+    const teachers = await courseService.getTeachers();
+    res.status(200).json(teachers);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching teachers", error });
+  }
+};
 
 const createCourse = async (req, res) => {
   try {
@@ -196,6 +206,7 @@ const getAllCoursesByPage = async (req, res) => {
 };
 
 module.exports = {
+  getTeachers,
   createCourse,
   updateCourse,
   deleteCourseById,

@@ -1,31 +1,31 @@
 const { db } = require("../db/mysqldb.js");
 
 // Retrieve the TeacherID based on the UserID
-const getTeacherIdByUserIdAsync = async (userId) => {
-  console.log("Inside getTeacherIdByUserId, User ID:", userId);
+const getTeachers = async () => {
+  const query = `
+    SELECT t.ID, u.username
+    FROM teachers AS t
+    INNER JOIN user AS u ON t.User_id = u.ID;
+  `;
+
   try {
-    const [teacherResult] = await db.query(
-      "SELECT ID FROM teachers WHERE User_id = ?",
-      [userId]
-    );
-    if (teacherResult.length === 0) {
-      return null;
-    }
-    return teacherResult[0].ID; // Return the TeacherID
+    const [teachers] = await db.query(query);
+    res.json(teachers);
   } catch (error) {
-    throw new Error(`Error fetching teacher ID: ${error.message}`);
+    res.status(500).json({ error: "Error fetching teachers" });
   }
 };
 
+
 // Use async/await to add a new course
 const addCourseAsync = async (course) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } =
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo } =
     course;
 
   // SQL query to insert a new course
   const query = `
-    INSERT INTO Courses (CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt)
-    VALUES (?, ?, ?, ?, ?, ?);
+    INSERT INTO Courses (CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
   `;
 
   // Values to be inserted
@@ -35,7 +35,8 @@ const addCourseAsync = async (course) => {
     CategoryID,
     Cover,
     TeacherID,
-    PublishedAt || new Date(),
+    PublishedAt || null,
+    IntroductionVideo,
   ];
 
   try {
@@ -50,11 +51,11 @@ const addCourseAsync = async (course) => {
 
 // Update a course based on the course ID and the updated course data
 const updateCourseAsync = async (courseId, updatedCourse) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt } =
+  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo } =
     updatedCourse;
   const query = `
         UPDATE Courses 
-        SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ? 
+        SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ?, IntroductionVideo = ?
         WHERE ID = ?
     `;
   const values = [
@@ -64,6 +65,7 @@ const updateCourseAsync = async (courseId, updatedCourse) => {
     Cover,
     TeacherID,
     PublishedAt,
+    IntroductionVideo,
     courseId,
   ];
 
@@ -230,9 +232,21 @@ const getCourseByIdAsync = async (courseId) => {
   }
 };
 
+// Publish course
+const publishCourseAsync = async (courseId) => {
+  const query = `UPDATE Courses SET PublishedAt = NOW() WHERE ID = ?`;
+  try {
+    const [result] = await db.query(query, [courseId]);
+    return result;
+  } catch (error) {
+    throw new Error(`Error publishing course: ${error.message}`);
+  }
+};
+
+
 module.exports = {
+  getTeachers,
   addCourseAsync,
-  getTeacherIdByUserIdAsync,
   updateCourseAsync,
   deleteCourseAsync,
   getAsyncAllCourses,

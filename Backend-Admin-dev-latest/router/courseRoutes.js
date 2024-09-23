@@ -15,6 +15,41 @@ const courseValidationRules = [
     // Add more validation rules as needed
 ];
 
+/**
+ * @openapi
+ * /api/teachers:
+ *   get:
+ *     tags:
+ *       - Course Controller
+ *     summary: 获取所有教师
+ *     description: 获取所有教师信息，包括TeacherID和对应的username
+ *     security:
+ *       - BearerAuth: []  # 添加 Bearer token 验证
+ *     responses:
+ *       200:
+ *         description: 成功获取教师列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   TeacherID:
+ *                     type: integer
+ *                     description: 教师的唯一ID
+ *                   username:
+ *                     type: string
+ *                     description: 教师的用户名
+ *       401:
+ *         description: Unauthorized, token is missing or invalid
+ *       500:
+ *         description: 服务器错误
+ */
+router.get('/all-teachers', courseController.getTeachers);
+
+
+
 // Create a new course
 /**
  * @openapi
