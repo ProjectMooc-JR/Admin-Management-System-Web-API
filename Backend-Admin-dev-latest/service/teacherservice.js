@@ -1,5 +1,7 @@
 const { db } = require("../db/mysqldb.js");
 
+//==================================================================================================================
+
 // Fetch all teachers' information from database and slipt into pages
 const getAllTeachersAsync = async (page, pageSize, includeUserData = false) => {
   // define a SQL script to count the total number of teachers in database
@@ -57,6 +59,8 @@ const getAllTeachersAsync = async (page, pageSize, includeUserData = false) => {
   };
 };
 
+//==================================================================================================================
+
 // Get teachers' information by ID
 const getTeacherByIdAsync = async (id) => {
   // 定义用ID拿取teacher数据的sql语句
@@ -69,6 +73,25 @@ const getTeacherByIdAsync = async (id) => {
   // 如果查询的第一条记录≤0，说明查询结果为空：
   return { isSuccess: false, message: "teacher is not found", data: {} };
 };
+
+//==================================================================================================================
+
+// Get whole set of teachers without pagination
+const getWholeTeachersAsync = async () => {
+  let sql = "SELECT * FROM teachers";
+  let result = await db.query(sql);
+
+  if (result[0].length > 0) {
+    return {
+      isSuccess: true,
+      message: "Teachers fetched successfully",
+      data: result[0],
+    };
+  }
+  return { isSuccess: false, message: "No teachers found", data: [] };
+};
+
+//==================================================================================================================
 
 // 添加教师
 const addTeacherAsync = async (teacher) => {
@@ -93,6 +116,8 @@ const addTeacherAsync = async (teacher) => {
   }
 };
 
+//==================================================================================================================
+
 // 更新教师
 const updateTeacherAsync = async (teacher) => {
   let sql =
@@ -113,6 +138,8 @@ const updateTeacherAsync = async (teacher) => {
   }
   return { isSuccess: false, message: "Failed to update teacher" };
 };
+
+//==================================================================================================================
 
 // 删除教师
 const deleteTeacherByIdAsync = async (ids) => {
@@ -142,4 +169,5 @@ module.exports = {
   updateTeacherAsync,
   deleteTeacherByIdAsync,
   getTeacherByMobileNumAsync,
+  getWholeTeachersAsync,
 };

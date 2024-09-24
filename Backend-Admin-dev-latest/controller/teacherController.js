@@ -3,6 +3,8 @@ const { bcryptConfig } = require("../appConfig");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 
+//==================================================================================================================
+
 // 添加教师
 const addTeacherAsync = async (req, res) => {
   // 从客户端接收到用户提交的表单中获取对应信息：
@@ -29,7 +31,9 @@ const addTeacherAsync = async (req, res) => {
   }
 };
 
-// 获取所有教师信息
+//==================================================================================================================
+
+// 分页获取所有教师信息
 const getAllTeachersAsync = async (req, res) => {
   // obtain pagination parameters from query
   const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
@@ -62,6 +66,21 @@ const getAllTeachersAsync = async (req, res) => {
   }
 };
 
+//==================================================================================================================
+
+// Fetching the whole set of teachers' information without pagination
+
+const getWholeTeachersAsync = async (req, res) => {
+  const result = await teacherService.getWholeTeachersAsync();
+  res.sendCommonValue(
+    result.data,
+    result.message,
+    result.isSuccess ? 200 : 404
+  );
+};
+
+//==================================================================================================================
+
 // 根据ID获取教师信息
 const getTeacherByIdAsync = async (req, res) => {
   const id = parseInt(req.params.id);
@@ -72,6 +91,8 @@ const getTeacherByIdAsync = async (req, res) => {
     result.isSuccess ? 200 : 400
   );
 };
+
+//==================================================================================================================
 
 // 根据ID更新教师信息
 const updateTeacherAsync = async (req, res) => {
@@ -95,6 +116,8 @@ const updateTeacherAsync = async (req, res) => {
   }
 };
 
+//==================================================================================================================
+
 // 根据ID删除教师
 const deleteTeacherByIdAsync = async (req, res) => {
   // 举例：
@@ -109,6 +132,8 @@ const deleteTeacherByIdAsync = async (req, res) => {
     result.isSuccess ? 200 : 400
   );
 };
+
+//==================================================================================================================
 
 // Get a specific teacher's information by mobile number
 const getTeacherByMobileNumAsync = async (req, res) => {
@@ -128,4 +153,5 @@ module.exports = {
   updateTeacherAsync,
   deleteTeacherByIdAsync,
   getTeacherByMobileNumAsync,
+  getWholeTeachersAsync,
 };

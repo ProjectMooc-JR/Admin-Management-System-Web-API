@@ -104,6 +104,27 @@ router.get(
 );
 
 //===============================================================================================//
+
+// Get whole set of users without pagination
+/**
+ * @openapi
+ * '/api/teachers':
+ *  get:
+ *     tags:
+ *     - Teacher Controller
+ *     summary: Get whole set of teachers
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *      200:
+ *        description: Teachers data fetched successfully
+ *      404:
+ *        description: No teachers found
+ *      500:
+ *        description: Server error
+ */
+router.get("/", teacherController.getWholeTeachersAsync);
+//===============================================================================================//
 // 添加教师信息的router：
 
 /**
