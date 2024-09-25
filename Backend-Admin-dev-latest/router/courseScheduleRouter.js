@@ -129,7 +129,7 @@ router.get("/:id", courseScheduleController.getCourseScheduleByIdAsync);
 router.post(
   "/",
   commonValidate([
-    body("CourseID")
+    body("CourseId")
       .isInt({ allow_leading_zeroes: false })
       .withMessage("Not a valid CourseID"),
     body("StartDate").optional().isDate().withMessage("Not a valid StartDate"),
