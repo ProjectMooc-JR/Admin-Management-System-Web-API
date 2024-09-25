@@ -23,6 +23,23 @@ const getTeachers = async () => {
   }
 };
 
+// Get all course names 
+const getCourseNames = async () => {
+  const query = `SELECT ID, CourseName FROM courses`;
+  try {
+    const [courses] = await db.query(query);
+    return {
+      isSuccess: true,
+      data: { items: courses, total: courses.length }
+    };
+  } catch (error) {
+    return {
+      isSuccess: false,
+      data: { items: [], total: 0 },
+    };
+  }
+};
+
 // Use async/await to add a new course
 const addCourseAsync = async (course) => {
   const {
@@ -32,12 +49,11 @@ const addCourseAsync = async (course) => {
     Cover,
     TeacherID,
     PublishedAt,
-    IntroductionVideo,
   } = course;
 
   // SQL query to insert a new course
   const query = `
-    INSERT INTO Courses (CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo)
+    INSERT INTO Courses (CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt)
     VALUES (?, ?, ?, ?, ?, ?, ?);
   `;
 
@@ -49,7 +65,6 @@ const addCourseAsync = async (course) => {
     Cover,
     TeacherID,
     PublishedAt || null,
-    IntroductionVideo,
   ];
 
   try {
@@ -71,11 +86,10 @@ const updateCourseAsync = async (courseId, updatedCourse) => {
     Cover,
     TeacherID,
     PublishedAt,
-    IntroductionVideo,
   } = updatedCourse;
   const query = `
         UPDATE Courses 
-        SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ?, IntroductionVideo = ?
+        SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ?
         WHERE ID = ?
     `;
   const values = [
@@ -85,7 +99,7 @@ const updateCourseAsync = async (courseId, updatedCourse) => {
     Cover,
     TeacherID,
     PublishedAt,
-    IntroductionVideo,
+
     courseId,
   ];
 
@@ -263,6 +277,8 @@ const publishCourseAsync = async (courseId) => {
   }
 };
 
+
+
 module.exports = {
   getTeachers,
   addCourseAsync,
@@ -271,4 +287,5 @@ module.exports = {
   getAsyncAllCourses,
   getCourseByIdAsync,
   getAllCoursesAsync, // 带分页功能的课程查询方法
+  getCourseNames,
 };

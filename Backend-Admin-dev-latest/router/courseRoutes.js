@@ -337,6 +337,8 @@ router.get(
     courseController.getAllCoursesByPage
   );
 
+router.get('/names', courseController.getCourseNames);
+
 
 module.exports = router;
 

@@ -17,6 +17,16 @@ const getTeachers = async (req, res) => {
   }
 };
 
+const getCourseNames = async (req, res) => {
+  try {
+    const result = await courseService.getCourseNames();
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching course names", error });
+  }
+};
+
+
 const createCourse = async (req, res) => {
   try {
     const defaultTeacherId = 1;
@@ -208,6 +218,8 @@ const getAllCoursesByPage = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   getTeachers,
   createCourse,
@@ -216,4 +228,5 @@ module.exports = {
   getAllCourses,
   getCourseById,
   getAllCoursesByPage,
+  getCourseNames,
 };
