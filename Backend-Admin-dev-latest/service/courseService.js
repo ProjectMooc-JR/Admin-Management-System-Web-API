@@ -10,17 +10,30 @@ const getTeachers = async () => {
 
   try {
     const [teachers] = await db.query(query);
-    res.json(teachers);
+    return {
+      isSuccess: true,
+      data: { items: teachers, total: teachers.length },
+    };
   } catch (error) {
-    res.status(500).json({ error: "Error fetching teachers" });
+    return {
+      isSuccess: false,
+      data: { items: [], total: 0 },
+    };
+    //res.status(500).json({ error: "Error fetching teachers" });
   }
 };
 
-
 // Use async/await to add a new course
 const addCourseAsync = async (course) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo } =
-    course;
+  const {
+    CourseName,
+    Description,
+    CategoryID,
+    Cover,
+    TeacherID,
+    PublishedAt,
+    IntroductionVideo,
+  } = course;
 
   // SQL query to insert a new course
   const query = `
@@ -51,8 +64,15 @@ const addCourseAsync = async (course) => {
 
 // Update a course based on the course ID and the updated course data
 const updateCourseAsync = async (courseId, updatedCourse) => {
-  const { CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt, IntroductionVideo } =
-    updatedCourse;
+  const {
+    CourseName,
+    Description,
+    CategoryID,
+    Cover,
+    TeacherID,
+    PublishedAt,
+    IntroductionVideo,
+  } = updatedCourse;
   const query = `
         UPDATE Courses 
         SET CourseName = ?, Description = ?, CategoryID = ?, Cover = ?, TeacherID = ?, PublishedAt = ?, IntroductionVideo = ?
@@ -242,7 +262,6 @@ const publishCourseAsync = async (courseId) => {
     throw new Error(`Error publishing course: ${error.message}`);
   }
 };
-
 
 module.exports = {
   getTeachers,

@@ -1,16 +1,19 @@
 const courseService = require("../service/courseService");
 const fs = require("fs");
 
-
 const logger = require("../common/logsetting");
 const { get } = require("http");
 
 const getTeachers = async (req, res) => {
   try {
-    const teachers = await courseService.getTeachers();
-    res.status(200).json(teachers);
+    const result = await courseService.getTeachers();
+    if (result.isSuccess) {
+      res.sendCommonValue(result.data, "", 200, 200);
+    }
+    //res.status(200).json(teachers);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching teachers", error });
+    res.sendCommonValue({}, "Error fetching teachers", 500, 200);
+    //res.status(500).json({ message: "Error fetching teachers", error });
   }
 };
 
