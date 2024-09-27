@@ -15,7 +15,7 @@ router.use(express.json());
  *  get:
  *     tags:
  *     - Course Schedule Controller
- *     summary: get course schedule by id
+ *     summary: get course schedule
  *     description: get course schedule with pagination
  *     security:
  *     - BearerAuth: []
@@ -28,7 +28,7 @@ router.use(express.json());
  *         type: integer
  *     - name: pageSize
  *       in: path
- *       description: Number of course schedules
+ *       description: pageSize
  *       required: true
  *       schema:
  *         type: integer
@@ -86,57 +86,15 @@ router.get(
  *      500:
  *        description: Server Error
  */
-router.get("/:id", courseScheduleController.getCourseScheduleByIdAsync);
-// 添加courseSchedule的router：
-/**
- * @openapi
- * '/api/courseSchedule':
- *  post:
- *     tags:
- *     - Course Schedule Controller
- *     summary: Updte a course Schedule
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               CourseID:
- *                 type: integer
- *                 required: true
- *                 description: ID of the course
- *                 example: 10
- *               StartDate:
- *                 type: date-time
- *                 required: true
- *               EndDate:
- *                 type: date-time
- *                 required: true
- *               isPublished:
- *                 type: boolean
- *     responses:
- *      201:
- *        description: Course Schedule added successfully
- *      400:
- *        description: Bad Request
- *      500:
- *        description: Server Error
- */
-
-router.post(
-  "/",
+router.get(
+  "/:id",
   commonValidate([
-    body("CourseID")
+    param("id")
+      .notEmpty()
       .isInt({ allow_leading_zeroes: false })
-      .withMessage("Not a valid CourseID"),
-    body("StartDate").optional().isDate().withMessage("Not a valid StartDate"),
-    body("EndDate").optional().isDate().withMessage("Not a valid EndDate"),
-    body("isPublished").isBoolean().withMessage("Publish or not"),
+      .withMessage("Not a valid id"),
   ]),
-  courseScheduleController.addCourseScheduleAsync
+  courseScheduleController.getCourseScheduleByIdAsync
 );
 
 //delete the course Schedule
@@ -152,7 +110,7 @@ router.post(
  *     parameters:
  *      - name: id
  *        in: path
- *        description: id of courseSchedule
+ *        description: id of course Schedule
  *        required: true
  *     responses:
  *      200:
@@ -176,11 +134,11 @@ router.delete(
   ]),
   courseScheduleController.deleteCourseScheduleAsync
 );
-//Add a course Schedule
+//Add a course Schedule 添加
 /**
  * @openapi
- * '/api/courseSchedule/{id}/add':
- *  put:
+ * '/api/courseSchedule/':
+ *  post:
  *     tags:
  *     - Course Schedule Controller
  *     summary: Add a course Schedule
@@ -192,6 +150,74 @@ router.delete(
  *         description: id
  *         required: true
  *         schema:
+ *         type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               CourseID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the course schedule
+ *                 example: 10
+ *               StartDate:
+ *                 type: date-time
+ *                 required: true
+ *                 example: 2024-08-20T09:41:01Z
+ *               EndDate:
+ *                 type: date-time
+ *                 required: true
+ *                 example: 2025-08-20T09:41:01Z
+ *               isPublished:
+ *                 type: boolean
+ *
+ *     responses:
+ *      201:
+ *        description: CourseSchedule Created successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
+
+router.post(
+  "/",
+  commonValidate([
+    // param("id")
+    //   .notEmpty()
+    //   .isInt({ allow_leading_zeroes: false })
+    //   .withMessage("Invalid ID"),
+    body("Course_id").notEmpty().withMessage("CourseID is required"),
+    body("StartDate").optional().isDate().withMessage("Invalid StartDate"),
+    body("EndDate").optional().isDate().withMessage("Invalid EndDate"),
+    body("isPublished").isBoolean().withMessage("Invalid"),
+  ]),
+  // (req, res, next) => {
+  //   console.log(req.body);
+  //   next();
+  // },
+  courseScheduleController.addCourseScheduleAsync
+);
+
+//Update a course Schedule
+/**
+ * @openapi
+ * '/api/courseSchedule/{id}':
+ *  put:
+ *     tags:
+ *     - Course Schedule Controller
+ *     summary: Update a course Schedule
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: id of course schedule
+ *         required: true
+ *         schema:
  *           type: integer
  *     requestBody:
  *       required: true
@@ -200,16 +226,16 @@ router.delete(
  *           schema:
  *             type: object
  *             properties:
- *               courseId:
+ *               CourseID:
  *                 type: integer
  *                 required: true
  *                 description: ID of the course
  *                 example: 10
- *               startDate:
+ *               StartDate:
  *                 type: date-time
  *                 required: true
  *                 example: 2024-08-20T09:41:01Z
- *               endDate:
+ *               EndDate:
  *                 type: date-time
  *                 required: true
  *                 example: 2025-08-20T09:41:01Z
@@ -226,22 +252,22 @@ router.delete(
  */
 
 router.put(
-  "/:id/add",
-  //   commonValidate([
-  // param("id")
-  //   .notEmpty()
-  //   .isInt({ allow_leading_zeroes: false })
-  //   .withMessage("Invalid ID"),
-  // body("courseId").notEmpty().withMessage("CourseID is required"),
-  // body("startDate").optional().isDate().withMessage("Invalid StartDate"),
-  // body("endDate").optional().isDate().withMessage("Invalid EndDate"),
-  // body("isPublished").isBoolean().withMessage("Invalid"),
-  //   ]),
-  (req, res, next) => {
-    console.log(req.body);
-    next();
-  },
-  courseScheduleController.addCourseScheduleAsync
+  "/:id",
+  commonValidate([
+    param("id")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false })
+      .withMessage("Invalid ID"),
+    body("Course_id").notEmpty().withMessage("CourseID is required"),
+    body("StartDate").optional().isDate().withMessage("Invalid StartDate"),
+    body("EndDate").optional().isDate().withMessage("Invalid EndDate"),
+    body("isPublished").isBoolean().withMessage("Invalid"),
+  ]),
+  // (req, res, next) => {
+  //   console.log(req.body);
+  //   next();
+  // },
+  courseScheduleController.updateCourseScheduleAsync
 );
 
 module.exports = router;

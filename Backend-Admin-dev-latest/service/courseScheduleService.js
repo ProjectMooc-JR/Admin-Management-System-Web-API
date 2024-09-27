@@ -55,28 +55,42 @@ const getCourseScheduleByIdAsync = async (id) => {
 };
 
 const addCourseScheduleAsync = async (courseScheduleData) => {
-  const { id, startDate, endDate, CourseId, isPublished } = courseScheduleData;
+  console.log("add course schedule data", courseScheduleData);
+  const { id, startDate, endDate, CourseID, isPublished } = courseScheduleData;
   let checkcourse = "";
   let params = [];
-  if (id > 0) {
+  //add &&
+  if (id && id > 0) {
     checkcourse =
-      "select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
-    params = [id, CourseId, startDate, startDate, endDate, endDate];
+      "select count(*) from courseschedule where id<>? and  CourseID=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+    params = [id, CourseID, startDate, startDate, endDate, endDate];
   } else {
     checkcourse =
-      "select count(*) from courseschedule where CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
-    params = [CourseId, startDate, startDate, endDate, endDate];
+      "select count(*) from courseschedule where CourseID=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+    params = [CourseID, startDate, startDate, endDate, endDate];
   }
 
   let { row } = await db.query(checkcourse, params);
-  if (parseInt(row[0]) > 0) {
+  //add &&
+  if (row && row[0] && parseInt(row[0]) > 0) {
     return { isSuccess: false, message: "" };
   }
 
   let sql =
-    "INSERT INTO courseschedule (startDate, endDate, CourseId, isPublished) VALUES (?, ?, ?, ?,?)";
+    "INSERT INTO courseschedule (startDate, endDate, CourseID, isPublished) VALUES (?, ?, ?, ?,?)";
   let result = await db.query(sql, [id, startDate, endDate, isPublished]);
-  return result[0].insertId;
+  //return result[0].insertId;
+  if (result.affectedRows > 0) {
+    return {
+      isSuccess: true,
+      message: "success",
+    };
+  } else {
+    return {
+      isSuccess: false,
+      message: "failed",
+    };
+  }
 };
 
 const deleteCourseScheduleAsync = async (id) => {
