@@ -54,7 +54,7 @@ const createCourse = async (req, res) => {
       CategoryID: req.body.CategoryID,
       Cover: avatarLocation,
       TeacherID: defaultTeacherId, // Use the default TeacherID
-      PublishedAt: req.body.PublishedAt || new Date().toISOString(), // Use current date and time as the publish time
+      PublishedAt: req.body.PublishedAt || new Date(), // Use current date and time as the publish time
     };
 
     const newCourseId = await courseService.addCourseAsync(courseData);

@@ -54,7 +54,7 @@ const addCourseAsync = async (course) => {
   // SQL query to insert a new course
   const query = `
     INSERT INTO Courses (CourseName, Description, CategoryID, Cover, TeacherID, PublishedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?);
+    VALUES (?, ?, ?, ?, ?, ?);
   `;
 
   // Values to be inserted
