@@ -17,7 +17,7 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
   // Define the SQL script to receive teachers' data with pagination using LIMIT and OFFSET ← they are SQL script rules
-  let sql = "SELECT s.*,c.CourseName FROM courseschedule s inner join courses c on s.CourseID=c.ID LIMIT ? OFFSET ?;";
+  let sql = "SELECT * FROM courseschedule LIMIT ? OFFSET ?;";
   // execute the pagination query and store the result in resultData
   // eg: p1:id=1 ~ id=10
   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
@@ -35,7 +35,6 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
       courseschedules.EndDate = field.EndDate;
       courseschedules.CourseID = field.CourseID;
       courseschedules.IsPublished = field.IsPublished;
-      courseschedules.CourseName = field.CourseName;
 
       // push teacher object which is filled by query information to the previous empty teacher array
       coursescheduleList.push(courseschedules);
@@ -61,7 +60,7 @@ const addCourseScheduleAsync = async (courseScheduleData) => {
   let params = [];
   if (id > 0) {
     checkcourse =
-      "select count(*) cnt from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+      "select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
     params = [id, CourseId, startDate, startDate, endDate, endDate];
   } else {
     checkcourse =

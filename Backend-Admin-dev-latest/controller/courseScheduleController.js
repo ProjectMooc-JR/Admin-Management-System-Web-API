@@ -10,15 +10,20 @@ const getCourseSchedulesAsync = async (req, res) => {
       page,
       pageSize
     );
-    if (courseSchedules.isSuccess) {
-      res.sendCommonValue(courseSchedules.data, "", 200, 200);
+    const courseSchedules =
     } else {
-      res.sendCommonValue({}, "Failed to fetch course schedules", 500, 500);
-    }
+      await courseScheduleService.getCourseSchedulesAsync();
+      page,
+      pageSize
     // res.status(200).json({
     //   success: true,
     //   data: courseSchedules,
     // });
+    if (courseSchedules.isSuccess) {
+      res.sendCommonValue(courseSchedules.data, "success", 200);
+    } else {
+      res.sendCommonValue([], "failed", 500);
+    }
   } catch (error) {
     console.error("Error fetching course schedules:", error);
     res.sendCommonValue({}, "Failed to fetch course schedules", 500, 500);
