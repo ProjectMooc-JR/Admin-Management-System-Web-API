@@ -4,28 +4,27 @@ const courseScheduleService = require("../service/courseScheduleService");
 
 const getCourseSchedulesAsync = async (req, res) => {
   try {
-    const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
-    const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
+    let page = parseInt(req.params.page);
+    let pageSize = parseInt(req.params.pageSize);
     const courseSchedules = await courseScheduleService.getCourseSchedulesAsync(
       page,
       pageSize
     );
-    if (courseSchedules.isSuccess) {
-      res.sendCommonValue(courseSchedules.data, "", 200, 200);
-    } else {
-      res.sendCommonValue({}, "Failed to fetch course schedules", 500, 500);
-    }
     // res.status(200).json({
     //   success: true,
     //   data: courseSchedules,
     // });
+    if (courseSchedules.isSuccess) {
+      res.sendCommonValue(courseSchedules.data, "success", 200);
+    } else {
+      res.sendCommonValue([], "failed", 500);
+    }
   } catch (error) {
     console.error("Error fetching course schedules:", error);
-    res.sendCommonValue({}, "Failed to fetch course schedules", 500, 500);
-    // res.status(500).json({
-    //   success: false,
-    //   message: "Failed to fetch course schedules",
-    // });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch course schedules",
+    });
   }
 };
 
