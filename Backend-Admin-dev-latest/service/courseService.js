@@ -226,7 +226,7 @@ const getAllCoursesAsync = async (page, pageSize) => {
 
       let ids = cidArray.join(",");
 
-      let sqlchapter = `select ChapterTitle, ChapterDescription, CourseID, VideoURL,ChapterOrder  from coursechapters where CourseID in(${ids})`;
+      let sqlchapter = `select ID, ChapterTitle, ChapterDescription, CourseID, VideoURL,ChapterOrder  from coursechapters where CourseID in(${ids})`;
       const [chaptersrows] = await db.query(sqlchapter);
       chapterItems = chaptersrows;
     }

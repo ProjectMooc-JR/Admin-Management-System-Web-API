@@ -14,7 +14,7 @@ const addChapterAsync = async (req, res) => {
       ChapterTitle: req.body.ChapterTitle,
       ChapterDescription: req.body.ChapterDescription,
       ChapterOrder: req.body.ChapterOrder,
-      VideoURL:file.path,
+      VideoURL:file.path.replace(/\/?public\/?/g, '')
     };
 
     const result = await chapterService.addChapterAsync(chapterData);
