@@ -52,25 +52,46 @@ const getAllChaptersByCourseIdAsync = async (req, res) => {
 
 // Get a chapter by ID
 const getChapterByIdAsync = async (req, res) => {
+  let courseId = parseInt(req.params.courseId);
+  let chapterId = parseInt(req.params.chapterId);
+
+  // 将负数的 chapterId 转换为正数
+  if (chapterId < 0) {
+    console.log("Received negative chapterId:", chapterId);
+    chapterId = Math.abs(chapterId); // 转换为正数
+    console.log("Converted chapterId to positive:", chapterId);
+  }
+
   try {
-    const courseId = parseInt(req.params.courseId);
-    const chapterId = parseInt(req.params.chapterId);
+    if (courseId === 0) {
+      // 当 courseId 为 0 时，只根据 chapterId 查询章节
+      console.log("Entering detail mode, fetching chapter by chapterId only:", chapterId);
+      
+      // 直接根据 chapterId 查询，不依赖 courseId
+      const result = await chapterService.getChapterByIdAsync(chapterId); // 假设有根据 chapterId 查询的 service 方法
+      if (result.isSuccess) {
+        return res.status(200).json(result.data);
+      } else {
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+    } else {
+      // 正常情况，根据 courseId 和 chapterId 查询章节
+      console.log("Fetching chapter by courseId:", courseId, "and chapterId:", chapterId);
 
-    // Get the chapter by course and ID
-    const result = await chapterService.getChapterByCourseAndIdAsync(
-      courseId,
-      chapterId
-    );
-
-    res.status(result.isSuccess ? 200 : 404).json({
-      data: result.data,
-      message: result.message,
-    });
+      const result = await chapterService.getChapterByCourseAndIdAsync(courseId, chapterId);
+      if (result.isSuccess) {
+        return res.status(200).json(result.data);
+      } else {
+        return res.status(404).json({ message: "Chapter not found" });
+      }
+    }
   } catch (error) {
-    console.error("Error retrieving chapter by ID:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error fetching chapter:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 // Update a chapter by courseId and chapterOrder
 const updateChapterByCourseAndOrderAsync = async (req, res) => {
@@ -194,6 +215,8 @@ const getChaptersByCourseIdWithPaginationAsync = async (req, res) => {
     });
   }
 };
+
+
 
 // Export functions
 module.exports = {
