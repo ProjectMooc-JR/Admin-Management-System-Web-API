@@ -12,11 +12,11 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
   let [resultCount] = await db.query(countSql);
   // extract the total number of courseschedule from the query result
   let total = resultCount[0].total;
-  // if the total number of teachers is 0, return an empty list with a total of 0
+  // if the total number of cours schedule is 0, return an empty list with a total of 0
   if (total == 0) {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
-  // Define the SQL script to receive teachers' data with pagination using LIMIT and OFFSET ← they are SQL script rules
+  // Define the SQL script to receive data with pagination using LIMIT and OFFSET ← they are SQL script rules
   let sql = "SELECT * FROM courseschedule LIMIT ? OFFSET ?;";
   // execute the pagination query and store the result in resultData
   // eg: p1:id=1 ~ id=10
@@ -101,7 +101,12 @@ const updateCourseScheduleAsync = async (id, courseScheduleData) => {
   let sql =
     "UPDATE courseschedule SET startDate = ?, endDate = ?, isPublished = ? WHERE id = ?";
   let result = await db.query(sql, [startDate, endDate, isPublished, id]);
-  return result[0].affectedRows; // 返回受影响的行数
+  // return result[0].affectedRows; // 返回受影响的行数
+  console.log("update course schedule result", result);
+  if (result[0].affectedRows > 0) {
+    return { isSuccess: true, message: "success" };
+  }
+  return { isSuccess: true, message: "Failed to update course schedule" };
 };
 
 module.exports = {

@@ -166,11 +166,11 @@ router.delete(
  *               StartDate:
  *                 type: date-time
  *                 required: true
- *                 example: 2024-08-20T09:41:01Z
+ *                 example: 2024-08-20
  *               EndDate:
  *                 type: date-time
  *                 required: true
- *                 example: 2025-08-20T09:41:01Z
+ *                 example: 2025-08-20
  *               isPublished:
  *                 type: boolean
  *
@@ -255,8 +255,8 @@ router.put(
       .isInt({ allow_leading_zeroes: false })
       .withMessage("Invalid ID"),
     body("Course_id").notEmpty().withMessage("CourseID is required"),
-    body("StartDate").optional().isDate().withMessage("Invalid StartDate"),
-    body("EndDate").optional().isDate().withMessage("Invalid EndDate"),
+    body("startDate").optional().isDate().withMessage("Invalid StartDate"),
+    body("endDate").optional().isDate().withMessage("Invalid EndDate"),
     body("isPublished").isBoolean().withMessage("Invalid"),
   ]),
   // (req, res, next) => {
