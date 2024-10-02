@@ -4,9 +4,29 @@ const courseCategoryController = require("../controller/courseCategoryController
 const { commonValidate } = require("../middleware/expressValidator"); // Import the validation middleware
 const { check, body, param } = require("express-validator");
 
+// Get whole set of course categories
 /**
  * @openapi
- * '/api/course-category/{courseCategoryId}':
+ * '/api/courseCategory':
+ *  get:
+ *     tags:
+ *     - Course Category
+ *     summary: Get whole set of users
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *      200:
+ *        description: Users data fetched successfully
+ *      404:
+ *        description: No users found
+ *      500:
+ *        description: Server error
+ */
+router.get("/", courseCategoryController.getAllCourseCategoryAsync);
+
+/**
+ * @openapi
+ * '/api/courseCategory/{courseCategoryId}':
  *  put:
  *     tags:
  *     - Course Category
@@ -83,11 +103,11 @@ const { check, body, param } = require("express-validator");
 
 /**
  * @openapi
- * '/api/course-category/{page}/{pageSize}':
+ * '/api/courseCategory/{page}/{pageSize}':
  *  get:
  *     tags:
  *     - Course Category
- *     summary: Get all course categories
+ *     summary: Get course categories by pagination
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -169,7 +189,7 @@ router.get(
       .isInt({ allow_leading_zeroes: false, min: 1 })
       .withMessage("Not a valid page"),
   ]),
-  courseCategoryController.getAllCourseCategoryAsync
+  courseCategoryController.getAllCourseCategoryByPageAsync
 );
 
 router.post(

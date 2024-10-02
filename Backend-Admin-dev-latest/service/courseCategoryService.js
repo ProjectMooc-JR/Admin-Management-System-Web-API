@@ -228,6 +228,7 @@ const deleteCourseCategoryByBatchAsync = async (ids) => {
     data: null,
   };
 };
+
 module.exports = {
   getCourseCategoryById,
   getAllCourseCategoryAsync,
