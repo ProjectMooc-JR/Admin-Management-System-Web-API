@@ -203,11 +203,11 @@ const getAllCourseCategoryByPage = async (page, pageSize) => {
   if (resultData[0].length > 0) {
     resultData[0].forEach((element) => {
       let category = { id: 0 };
-      category.id = element.ID;
-      category.categoryName = element.CategoryName;
-      category.level = element.Level;
-      category.parentID = element.ParentID;
-      category.notes = element.Notes;
+      category.ID = element.ID;
+      category.CategoryName = element.CategoryName;
+      category.Level = element.Level;
+      category.ParentID = element.ParentID;
+      category.Notes = element.Notes;
       categorylist.push(category);
     });
   }
