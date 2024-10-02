@@ -40,12 +40,13 @@ const createCourse = async (req, res) => {
       let base64Data = req.body.Cover.replace(/^data:image\/\w+;base64,/, "");
       //const buffer = Buffer.from(base64Data, "binary");
       const fileName = `course-${req.body.CourseName}.jpg`; // Use the CourseName as the filename
-      const filePath = `images/course/${fileName}`; // File save path
+      const filePath = `public/images/course/${fileName}`; // File save path
+      const dbFilePath = `/images/course/${fileName}`; // File save path
       // Write the image to the file system
       fs.writeFileSync(filePath, base64Data, { encoding: "base64" }, (err) => {
         logger.error("writeFileSync", err);
       });
-      avatarLocation = filePath;
+      avatarLocation = dbFilePath;
     }
 
     const courseData = {
