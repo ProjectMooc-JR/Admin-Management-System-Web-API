@@ -28,7 +28,7 @@ router.use(express.json());
  *         type: integer
  *     - name: pageSize
  *       in: path
- *       description: pageSize
+ *       description: Number of course schedules
  *       required: true
  *       schema:
  *         type: integer
@@ -86,15 +86,57 @@ router.get(
  *      500:
  *        description: Server Error
  */
-router.get(
-  "/:id",
+router.get("/:id", courseScheduleController.getCourseScheduleByIdAsync);
+// 添加courseSchedule的router：
+/**
+ * @openapi
+ * '/api/courseSchedule':
+ *  post:
+ *     tags:
+ *     - Course Schedule Controller
+ *     summary: Updte a course Schedule
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               CourseID:
+ *                 type: integer
+ *                 required: true
+ *                 description: ID of the course
+ *                 example: 10
+ *               StartDate:
+ *                 type: date-time
+ *                 required: true
+ *               EndDate:
+ *                 type: date-time
+ *                 required: true
+ *               isPublished:
+ *                 type: boolean
+ *     responses:
+ *      201:
+ *        description: Course Schedule added successfully
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
+
+router.post(
+  "/",
   commonValidate([
-    param("id")
-      .notEmpty()
+    body("CourseId")
       .isInt({ allow_leading_zeroes: false })
-      .withMessage("Not a valid id"),
+      .withMessage("Not a valid CourseID"),
+    body("StartDate").optional().isDate().withMessage("Not a valid StartDate"),
+    body("EndDate").optional().isDate().withMessage("Not a valid EndDate"),
+    body("isPublished").isBoolean().withMessage("Publish or not"),
   ]),
-  courseScheduleController.getCourseScheduleByIdAsync
+  courseScheduleController.addCourseScheduleAsync
 );
 
 //delete the course Schedule

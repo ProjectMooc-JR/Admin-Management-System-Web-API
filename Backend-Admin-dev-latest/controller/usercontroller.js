@@ -162,15 +162,15 @@ const updateUserAsync = async (req, res) => {
 //   }
 // };
 
-//const getUserByIdAsync = async (req, res) => {
-//   let id = parseInt(req.query.id);
-//   let result = await userservice.getUserbyIdAsync(id);
-//   if (result.isSuccess) {
-//     res.sendCommonValue(result.data, "success", 1);
-//   } else {
-//     res.sendCommonValue([], "failed", 0);
-//   }
-// };
+const getUserByIdAsync = async (req, res) => {
+  let id = parseInt(req.query.id);
+  let result = await userservice.getUserbyIdAsync(id);
+  if (result.isSuccess) {
+    res.sendCommonValue(result.data, "success", 1);
+  } else {
+    res.sendCommonValue([], "failed", 0);
+  }
+};
 
 module.exports = {
   addUserAsync,
@@ -179,7 +179,7 @@ module.exports = {
   getUserListAsync,
   updateUserAsync,
   deleteUserByIdsAsync,
-  //getUserByIdAsync,
+  getUserByIdAsync,
   //getUserListByAccessAsync,
   //updatePasswordAsync
   getWholeUsersAsync,

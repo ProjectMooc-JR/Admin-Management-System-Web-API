@@ -40,7 +40,7 @@ const createCourse = async (req, res) => {
       let base64Data = req.body.Cover.replace(/^data:image\/\w+;base64,/, "");
       //const buffer = Buffer.from(base64Data, "binary");
       const fileName = `course-${req.body.CourseName}.jpg`; // Use the CourseName as the filename
-      const filePath = `public/images/course/${fileName}`; // File save path
+      const filePath = `images/course/${fileName}`; // File save path
       // Write the image to the file system
       fs.writeFileSync(filePath, base64Data, { encoding: "base64" }, (err) => {
         logger.error("writeFileSync", err);
@@ -54,7 +54,7 @@ const createCourse = async (req, res) => {
       CategoryID: req.body.CategoryID,
       Cover: avatarLocation,
       TeacherID: defaultTeacherId, // Use the default TeacherID
-      PublishedAt: req.body.PublishedAt || new Date().toISOString(), // Use current date and time as the publish time
+      PublishedAt: req.body.PublishedAt || new Date(), // Use current date and time as the publish time
     };
 
     const newCourseId = await courseService.addCourseAsync(courseData);

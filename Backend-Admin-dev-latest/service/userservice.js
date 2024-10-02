@@ -38,7 +38,7 @@ const getWholeUsersAsync = async () => {
 // add user
 const addUserAsync = async (user) => {
   let sql =
-    "insert into user (username, password, email, address, age, gender, avatar, nickname, access, active) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "insert into users (username, password, email, address, age, gender, avatar, nickname, access, active) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   let [result] = await db.query(sql, [
     user.username,
     user.password,
@@ -100,8 +100,8 @@ const deleteUserByIdsAsync = async (ids) => {
 //update
 const updateUserByIdAsync = async (user) => {
   // SQL query statement
-  let sql = `UPDATE user SET username = ?, email = ?, address = ?, age = ?, gender = ?, avatar = ?, nickname = ?, access = ?,active = ? WHERE id = ?`;
-  // Executing the query
+  let sql = `UPDATE user SET username = ?, email = ?, address = ?, age = ?, gender = ?, avatar = ?, nickname = ?, access = ?,active = ?, WHERE id = ?`;
+   // Executing the query
   let result = await db.query(sql, [
     user.username,
     user.email,
@@ -112,13 +112,14 @@ const updateUserByIdAsync = async (user) => {
     user.nickname,
     user.access,
     user.active,
-    user.id, // The ID should be at the end to match the WHERE clause
+    user.id // The ID should be at the end to match the WHERE clause
   ]);
   if (result[0].affectedRows > 0) {
     return { isSuccess: true, message: "Update successful" };
   }
   return { isSuccess: false, message: "Fail to update" };
 };
+
 
 var getUserListAsync = async (page, pageSize) => {
   let countSql = "SELECT count(*) total FROM user; ";
@@ -153,6 +154,25 @@ var getUserListAsync = async (page, pageSize) => {
   };
 };
 
+var getUserbyIdAsync = async (id) => {
+  let sql = "SELECT * FROM user where id=? ";
+  let result = await db.query(sql, [id]);
+  let user = { id: 0 };
+  if (result[0].length > 0) {
+    user.id = result[0][0].id;
+    user.username = result[0][0].username;
+    user.password = result[0][0].password;
+    user.email = result[0][0].email;
+    user.address = result[0][0].address;
+    user.age = result[0][0].age;
+    user.gender = result[0][0].gender;
+    user.avatar = result[0][0].avatar;
+    user.access = result[0][0].access;
+  }
+  return { isSuccess: true, message: "", data: user };
+};
+
+
 module.exports = {
   getUserListAsync,
   getUserbyNameAsync,
@@ -161,4 +181,5 @@ module.exports = {
   updateUserByIdAsync,
   deleteUserByIdsAsync,
   getWholeUsersAsync,
+  getUserbyIdAsync,
 };

@@ -4,12 +4,14 @@ const courseScheduleService = require("../service/courseScheduleService");
 
 const getCourseSchedulesAsync = async (req, res) => {
   try {
-    let page = parseInt(req.params.page);
-    let pageSize = parseInt(req.params.pageSize);
+    const page = parseInt(req.params.page) || 1; // set default to 1 if there's no page value provided
+    const pageSize = parseInt(req.params.pageSize) || 10; // set default value of 10 items showing in one page
+
     const courseSchedules = await courseScheduleService.getCourseSchedulesAsync(
       page,
       pageSize
     );
+
     // res.status(200).json({
     //   success: true,
     //   data: courseSchedules,

@@ -35,6 +35,7 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
       courseschedules.EndDate = field.EndDate;
       courseschedules.CourseID = field.CourseID;
       courseschedules.IsPublished = field.IsPublished;
+      courseschedules.CourseName = field.CourseName;
 
       // push teacher object which is filled by query information to the previous empty teacher array
       coursescheduleList.push(courseschedules);
@@ -55,39 +56,28 @@ const getCourseScheduleByIdAsync = async (id) => {
 };
 
 const addCourseScheduleAsync = async (courseScheduleData) => {
-  console.log(">>>courseScheduleData", courseScheduleData);
   const { id, startDate, endDate, CourseId, isPublished } = courseScheduleData;
   let checkcourse = "";
   let params = [];
-  if (id && id > 0) {
+  if (id > 0) {
     checkcourse =
-      "select count(*) from courseschedule where id<>? and  CourseID=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+      "select count(*) from courseschedule where id<>? and  CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
     params = [id, CourseId, startDate, startDate, endDate, endDate];
   } else {
     checkcourse =
-      "select count(*) from courseschedule where CourseID=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
+      "select count(*) cnt from courseschedule where CourseId=? and (startDate<=? or endDate>=?) and (startDate<=? or endDate>=?)";
     params = [CourseId, startDate, startDate, endDate, endDate];
   }
 
-  let { row } = await db.query(checkcourse, params);
-  if (row && row[0] && parseInt(row[0]) > 0) {
+  let queryResult = await db.query(checkcourse, params);
+  if (parseInt(queryResult[0].cnt) > 0) {
     return { isSuccess: false, message: "" };
   }
 
   let sql =
-    "INSERT INTO courseschedule (startDate, endDate, CourseID, isPublished) VALUES (?,?,?,?)";
+    "INSERT INTO courseschedule (startDate, endDate, CourseId, isPublished) VALUES (?, ?, ?, ?)";
   let result = await db.query(sql, [startDate, endDate, CourseId, isPublished]);
-  if (result.affectedRows > 0) {
-    return {
-      isSuccess: true,
-      message: "success",
-    };
-  } else {
-    return {
-      isSuccess: false,
-      message: "failed",
-    };
-  }
+  return result[0].insertId;
 };
 
 const deleteCourseScheduleAsync = async (id) => {

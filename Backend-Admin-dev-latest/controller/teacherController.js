@@ -13,7 +13,7 @@ const addTeacherAsync = async (req, res) => {
     Specialization: req.body.Specialization,
     Description: req.body.Description,
     HireDate: req.body.HireDate,
-    HireStatus: req.body.HireStatus === "true", //这里可以将字符串“true”转换成boolean值
+    HireStatus: req.body.HireStatus === 1, //这里可以将字符串“true”转换成boolean值
     MobileNum: req.body.MobileNum,
     LinkedInLink: req.body.LinkedInLink,
   };
@@ -105,7 +105,7 @@ const updateTeacherAsync = async (req, res) => {
   teacher.MobileNum = req.body.MobileNum;
   teacher.LinkedInLink = req.body.LinkedInLink;
   //teacher.HireStatus = parseInt(req.body.HireStatus);
-  teacher.HireStatus = req.body.HireStatus === "true";
+  teacher.HireStatus = req.body.HireStatus === 1;
 
   console.log("updateTeacherAsync before await", teacher);
   let result = await teacherService.updateTeacherAsync(teacher);
