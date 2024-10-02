@@ -254,7 +254,7 @@ router.put(
       .notEmpty()
       .isInt({ allow_leading_zeroes: false })
       .withMessage("Invalid ID"),
-    body("Course_id").notEmpty().withMessage("CourseID is required"),
+    body("CourseId").notEmpty().withMessage("CourseID is required"),
     body("startDate").optional().isDate().withMessage("Invalid StartDate"),
     body("endDate").optional().isDate().withMessage("Invalid EndDate"),
     body("isPublished").isBoolean().withMessage("Invalid"),

@@ -40,10 +40,10 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
       coursescheduleList.push(courseschedules);
     });
   }
-  // Return the result object containing the list of teachers and the total count, along with a success flag
+  // Return the result object containing the list of courseSchedule and the total count, along with a success flag
   return {
     isSuccess: true,
-    message: "",
+    message: "success",
     data: { items: coursescheduleList, total: total },
   };
 };
@@ -97,10 +97,16 @@ const deleteCourseScheduleAsync = async (id) => {
 };
 
 const updateCourseScheduleAsync = async (id, courseScheduleData) => {
-  const { startDate, endDate, isPublished } = courseScheduleData;
+  const { startDate, endDate, isPublished, CourseId } = courseScheduleData;
   let sql =
     "UPDATE courseschedule SET startDate = ?, endDate = ?, isPublished = ? WHERE id = ?";
-  let result = await db.query(sql, [startDate, endDate, isPublished, id]);
+  let result = await db.query(sql, [
+    startDate,
+    endDate,
+    isPublished,
+    CourseId,
+    id,
+  ]);
   // return result[0].affectedRows; // 返回受影响的行数
   console.log("update course schedule result", result);
   if (result[0].affectedRows > 0) {
