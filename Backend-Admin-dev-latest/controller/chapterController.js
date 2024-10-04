@@ -14,7 +14,7 @@ const addChapterAsync = async (req, res) => {
       ChapterTitle: req.body.ChapterTitle,
       ChapterDescription: req.body.ChapterDescription,
       ChapterOrder: req.body.ChapterOrder,
-      VideoURL:file.path.replace(/\/?public\/?/g, '')
+      VideoURL:file.path.replace(/\/?public\/?/g, '').replace(/\\/g,'/')
     };
 
     const result = await chapterService.addChapterAsync(chapterData);
@@ -39,6 +39,22 @@ const getAllChaptersByCourseIdAsync = async (req, res) => {
 
   try {
     const result = await chapterService.getAllChaptersByCourseIdAsync(courseId);
+    res.sendCommonValue(
+      result.data,
+      result.message,
+      result.isSuccess ? 200 : 400
+    );
+  } catch (error) {
+    console.error("Error retrieving chapters:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const getAllChaptersByChapterIdAsync = async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  try {
+    const result = await chapterService.getChapterByIdAsync(id);
     res.sendCommonValue(
       result.data,
       result.message,
@@ -227,4 +243,5 @@ module.exports = {
   deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
   getChaptersByCourseIdWithPaginationAsync,
+  getAllChaptersByChapterIdAsync
 };

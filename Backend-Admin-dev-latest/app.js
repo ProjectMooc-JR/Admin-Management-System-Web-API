@@ -54,6 +54,8 @@ app.use(
     path: [
       "/",
       /^\/public\/.*/,
+      /^\/images\/.*/,
+      /^\/videos\/.*/,
       "/api-docs",
       "/api/auth/login",
       "/api/auth/loginOut",

@@ -4,6 +4,8 @@ const router = express.Router();
 const { check } = require("express-validator");
 const { commonValidate } = require("../middleware/expressValidator");
 
+const { body, query, param } = require("express-validator");
+
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -141,6 +143,17 @@ router.post(
 router.get(
   "/:courseId/chapters",
   chapterController.getAllChaptersByCourseIdAsync
+);
+
+router.get(
+  "/:id",
+  commonValidate([
+    param("id")
+      .notEmpty()
+      .isInt({ allow_leading_zeroes: false })
+      .withMessage("Invalid chapter ID"),
+  ]),
+  chapterController.getAllChaptersByChapterIdAsync
 );
 
 // get chapter by id

@@ -58,6 +58,25 @@ const getChapterByCourseAndIdAsync = async (courseId, chapterId) => {
     }
 };
 
+// Get a chapter by ID
+const getChapterByIdAsync = async ( chapterId) => {
+    try {
+        const result = await db.query(
+            "SELECT * FROM coursechapters WHERE ID = ?",
+            [chapterId]
+        );
+        if (result.length > 0) {
+            return { isSuccess: true, data: result[0], message: "Chapter found" };
+        } else {
+            return { isSuccess: false, data: null, message: "Chapter not found" };
+        }
+    } catch (error) {
+        console.error("Error retrieving chapter:", error);
+        return { isSuccess: false, message: error.message };
+    }
+};
+
+
 
 // Update a chapter by CourseAndOrder
 const updateChapterByCourseAndOrderAsync = async (courseId, chapterOrder, chapter) => {
@@ -199,5 +218,6 @@ module.exports = {
   updateChapterByCourseAndOrderAsync,
   deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
-  getAllChaptersByPaginationAsync
+  getAllChaptersByPaginationAsync,
+  getChapterByIdAsync
 };
