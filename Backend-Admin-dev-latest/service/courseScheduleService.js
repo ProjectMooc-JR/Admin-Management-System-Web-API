@@ -17,7 +17,14 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
     return { isSuccess: true, message: "", data: { items: [], total: 0 } };
   }
   // Define the SQL script to receive data with pagination using LIMIT and OFFSET ← they are SQL script rules
-  let sql = "SELECT * FROM courseschedule LIMIT ? OFFSET ?;";
+  //let sql = "SELECT * FROM courseschedule LIMIT ? OFFSET ?;";
+  //这里是转courseId到course Name的
+  let sql = `
+  SELECT cs.*, c.CourseName 
+  FROM courseschedule AS cs
+  INNER JOIN courses AS c ON cs.CourseID = c.ID
+  LIMIT ? OFFSET ?;
+`;
   // execute the pagination query and store the result in resultData
   // eg: p1:id=1 ~ id=10
   let resultData = await db.query(sql, [pageSize, (page - 1) * pageSize]);
@@ -51,8 +58,12 @@ const getCourseSchedulesAsync = async (page, pageSize) => {
 
 const getCourseScheduleByIdAsync = async (id) => {
   let sql = "SELECT * FROM courseschedule WHERE id = ?";
-  let result = await db.query(sql, [id]);
-  return result[0][0];
+  let resultData = await db.query(sql, [id]);
+  if (resultData[0].length > 0) {
+    return { isSuccess: true, message: "success", data: resultData[0][0] };
+  } else {
+    return { isSuccess: false, message: "failed", data: {} };
+  }
 };
 
 const addCourseScheduleAsync = async (courseScheduleData) => {
@@ -76,7 +87,12 @@ const addCourseScheduleAsync = async (courseScheduleData) => {
 
   let sql =
     "INSERT INTO courseschedule (startDate, endDate, CourseId, isPublished) VALUES (?, ?, ?, ?)";
-  let result = await db.query(sql, [startDate, endDate, CourseId, isPublished]);
+  let result = await db.query(sql, [
+    startDate,
+    endDate,
+    CourseId,
+    !!isPublished,
+  ]);
   return result[0].insertId;
 };
 
@@ -89,8 +105,8 @@ const deleteCourseScheduleAsync = async (id) => {
 const updateCourseScheduleAsync = async (id, courseScheduleData) => {
   const { startDate, endDate, isPublished, CourseId } = courseScheduleData;
   let sql =
-    "UPDATE courseschedule SET startDate = ?, endDate = ?, isPublished = ? WHERE id = ?";
-  let result = await db.query(sql, [
+    "UPDATE courseschedule SET CourseId = ?, startDate = ?, endDate = ?, isPublished = ? WHERE id = ?";
+  let [result] = await db.query(sql, [
     startDate,
     endDate,
     isPublished,
@@ -99,10 +115,11 @@ const updateCourseScheduleAsync = async (id, courseScheduleData) => {
   ]);
   // return result[0].affectedRows; // 返回受影响的行数
   console.log("update course schedule result", result);
-  if (result[0].affectedRows > 0) {
-    return { isSuccess: true, message: "success" };
+
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "Updated successful" };
   }
-  return { isSuccess: true, message: "Failed to update course schedule" };
+  return { isSuccess: false, message: "Failed to update" };
 };
 
 module.exports = {
