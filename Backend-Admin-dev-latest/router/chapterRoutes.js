@@ -365,7 +365,7 @@ router.delete(
 
 // Get chapters with pagination
 /**
- * @openapi
+ * @swagger
  * /api/courses/{courseId}/chapters:
  *   get:
  *     tags:
@@ -474,6 +474,66 @@ router.get(
 // );
 
 module.exports = router;
+
+/**
+ * @swagger
+ * /api/chapters/{chapterId}:
+ *   put:
+ *     tags:
+ *       - Chapter Controller
+ *     summary: Update a chapter by chapter ID
+ *     description: Updates a specific chapter using the chapter's ID.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: chapterId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 16
+ *         description: The ID of the chapter
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ChapterTitle:
+ *                 type: string
+ *                 example: Updated Introduction to Python
+ *               ChapterDescription:
+ *                 type: string
+ *                 example: This updated chapter covers the basics of Python programming.
+ *               CourseID:
+ *                 type: integer
+ *                 example: 14
+ *               VideoURL:
+ *                 type: string
+ *                 example: https://example.com/updated-python-intro.mp4
+ *               isCompleted:
+ *                 type: integer
+ *                 example: 1
+ *               ChapterOrder:
+ *                 type: integer
+ *                 example: 8
+ *               
+ *     responses:
+ *       200:
+ *         description: Chapter updated successfully
+ *        
+ *       400:
+ *         description: Invalid chapter ID or missing required fields
+ *        
+ *       404:
+ *         description: Chapter not found
+ *         
+ *       500:
+ *         description: Internal server error
+ *        
+ */
+router.put('/:chapterId', chapterController.updateChapterAsync);
 
 // Progress tracking
 router.put(

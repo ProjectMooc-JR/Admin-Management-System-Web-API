@@ -1,4 +1,5 @@
 const chapterService = require("../service/chapterService");
+const returnvalue = require("../middleware/returnvalue");
 
 // Add a new chapter
 const addChapterAsync = async (req, res) => {
@@ -84,7 +85,7 @@ const getChapterByIdAsync = async (req, res) => {
       console.log("Entering detail mode, fetching chapter by chapterId only:", chapterId);
       
       // 直接根据 chapterId 查询，不依赖 courseId
-      const result = await chapterService.getChapterByIdAsync(chapterId); // 假设有根据 chapterId 查询的 service 方法
+      const result = await chapterService.getChapterByIdAsync(chapterId); 
       if (result.isSuccess) {
         return res.status(200).json(result.data);
       } else {
@@ -233,6 +234,23 @@ const getChaptersByCourseIdWithPaginationAsync = async (req, res) => {
 };
 
 
+const updateChapterAsync = async (req, res) => {
+  const chapterId = req.params.ID;
+  const updatedChapter = req.body;
+
+  try {
+    const result = await updateChapterAsync(chapterId, updatedChapter);
+    
+    if (result.isSuccess) {
+      return returnvalue(res, result.data, "Chapter updated successfully", 0, 200); 
+    } else {
+      return returnvalue(res, null, "Chapter not found or no changes made", 0, 400);
+    }
+  } catch (error) {
+    console.error("Error in updateChapter controller:", error);
+    return returnvalue(res, null, "Internal Server Error", 0, 500);
+  }
+};
 
 // Export functions
 module.exports = {
@@ -243,5 +261,6 @@ module.exports = {
   deleteChapterByCourseAndOrderAsync,
   markChapterAsCompletedAsync,
   getChaptersByCourseIdWithPaginationAsync,
-  getAllChaptersByChapterIdAsync
+  getAllChaptersByChapterIdAsync,
+  updateChapterAsync
 };

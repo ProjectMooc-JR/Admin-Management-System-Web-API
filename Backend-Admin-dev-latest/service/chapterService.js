@@ -210,14 +210,58 @@ const getAllChaptersByPaginationAsync = async (courseId, page = 1, pageSize = 10
     }
 };
 
+// Update a chapter by ID
+const updateChapterAsync = async (chapterId, updatedChapter) => {
+    try {
+        const query = `SELECT * FROM coursechapters WHERE ID = ?`;
+        const [result] = await db.query(query, [chapterId]);
+
+        if (result.length === 0) {
+        return { isSuccess: false, message: "Chapter not found" };
+        }
+
+        // 更新章节内容
+        const updateQuery = `
+        UPDATE coursechapters
+        SET ChapterTitle = ?, ChapterDescription = ?, CourseID = ?, VideoURL = ?, isCompleted = ?, ChapterOrder = ?
+        WHERE ID = ? 
+        `;
+
+        const updateValues = [
+        updatedChapter.ChapterTitle,
+        updatedChapter.ChapterDescription,
+        updatedChapter.CourseID,
+        updatedChapter.VideoURL,
+        updatedChapter.isCompleted,
+        updatedChapter.ChapterOrder,
+        chapterId,
+        ];
+
+        const updateResult = await db.query(updateQuery, updateValues);
+
+        if (updateResult.affectedRows > 0) {
+        return { isSuccess: true, message: "Chapter updated successfully" };
+        } else {
+        return { isSuccess: false, message: "Chapter not found or no changes made" };
+        }
+    } catch (error) {
+        console.error("Error updating chapter:", error);
+        return { isSuccess: false, message: error.message };
+    }
+};
+
+
+
+
 
 module.exports = {
-  addChapterAsync,
-  getAllChaptersByCourseIdAsync,
-  getChapterByCourseAndIdAsync,
-  updateChapterByCourseAndOrderAsync,
-  deleteChapterByCourseAndOrderAsync,
-  markChapterAsCompletedAsync,
-  getAllChaptersByPaginationAsync,
-  getChapterByIdAsync
+    addChapterAsync,
+    getAllChaptersByCourseIdAsync,
+    getChapterByCourseAndIdAsync,
+    updateChapterByCourseAndOrderAsync,
+    deleteChapterByCourseAndOrderAsync,
+    markChapterAsCompletedAsync,
+    getAllChaptersByPaginationAsync,
+    getChapterByIdAsync,
+    updateChapterAsync
 };
