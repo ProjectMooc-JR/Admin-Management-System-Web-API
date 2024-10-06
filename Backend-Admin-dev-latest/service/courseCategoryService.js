@@ -1,12 +1,13 @@
 const { db } = require("../db/mysqldb.js");
 const logger = require("../common/logsetting.js");
+
 //add course category
 const addCourseCategoryAsync = async (courseCategory) => {
   const { CategoryName, Level, ParentID, Notes } = courseCategory;
   const insertSql =
-    "INSERT INTO coursecategories (CategoryName, Level, ParentID, Notes,Version) VALUES (?, ?, ?, ?,?);";
+    "INSERT INTO coursecategories (CategoryName, Level, ParentID, Notes) VALUES (?, ?, ?, ?);";
   const querySql = "select * from coursecategories where CategoryName = ? ;";
-  const values = [CategoryName, Level, ParentID, Notes, 0];
+  const values = [CategoryName, Level, ParentID, Notes];
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
@@ -34,57 +35,75 @@ const addCourseCategoryAsync = async (courseCategory) => {
     logger.info(`Transaction complete for category: ${CategoryName}`);
   }
 };
+
 // update course category
-const updateCourseCategoryAsync = async (courseCategory) => {
-  const { id, CategoryName, Level, ParentID, Notes } = courseCategory;
+// const updateCourseCategoryAsync = async (courseCategory) => {
+//   const { id, CategoryName, Level, ParentID, Notes } = courseCategory;
 
-  const selectSql = "SELECT * FROM coursecategories WHERE ID = ?;";
-  const updateSql = `UPDATE coursecategories 
-                     SET CategoryName = ?, Level = ?, ParentID = ?, Notes = ?, Version = Version + 1 
-                     WHERE ID = ? AND Version = ?;`;
-  const connection = await db.getConnection();
+//   const selectSql = "SELECT * FROM coursecategories WHERE ID = ?;";
+//   const updateSql = `UPDATE coursecategories
+//                      SET CategoryName = ?, Level = ?, ParentID = ?, Notes = ?, Version = Version + 1
+//                      WHERE ID = ? AND Version = ?;`;
+//   const connection = await db.getConnection();
 
-  try {
-    await connection.beginTransaction();
-    logger.info(`Starting transaction to update category with ID: ${id}`);
-    const [rows] = await db.query(selectSql, [id]);
-    if (rows.length === 0) {
-      logger.warn(`Category with ID: ${id} does not exist.`);
-      await connection.rollback();
-      return { isSuccess: false, msg: "course category not exist", data: null };
-    }
-    console.log(rows);
-    const currentVersion = rows[0].Version;
-    console.log("currentVersion::;", currentVersion);
-    const values = [CategoryName, Level, ParentID, Notes, id, currentVersion];
+//   try {
+//     await connection.beginTransaction();
+//     logger.info(`Starting transaction to update category with ID: ${id}`);
+//     const [rows] = await db.query(selectSql, [id]);
+//     if (rows.length === 0) {
+//       logger.warn(`Category with ID: ${id} does not exist.`);
+//       await connection.rollback();
+//       return { isSuccess: false, msg: "course category not exist", data: null };
+//     }
+//     console.log(rows);
+//     const currentVersion = rows[0].Version;
+//     console.log("currentVersion::;", currentVersion);
+//     const values = [CategoryName, Level, ParentID, Notes, id, currentVersion];
 
-    const [updateResult] = await db.query(updateSql, values);
-    console.log(updateResult);
-    if (updateResult.affectedRows !== 1) {
-      logger.warn(
-        `Update failed for category with ID: ${id} due to version conflict.`
-      );
-      await connection.rollback();
-      return {
-        isSuccess: false,
-        msg: "update failed due to version conflict",
-        data: null,
-      };
-    }
-    const [updatedRows] = await db.query(selectSql, [id]);
-    await connection.commit();
-    logger.info(`Category with ID: ${id} updated successfully.`);
-    return { isSuccess: true, msg: "update successfully", data: updatedRows };
-  } catch (error) {
-    logger.error(`Error updating category with ID: ${id} - ${error.message}`);
-    await connection.rollback();
-    return { isSuccess: false, msg: error.message, data: null };
-  } finally {
-    logger.info(`Transaction complete for category with ID: ${id}`);
-    connection.release();
+//     const [updateResult] = await db.query(updateSql, values);
+//     console.log(updateResult);
+//     if (updateResult.affectedRows !== 1) {
+//       logger.warn(
+//         `Update failed for category with ID: ${id} due to version conflict.`
+//       );
+//       await connection.rollback();
+//       return {
+//         isSuccess: false,
+//         msg: "update failed due to version conflict",
+//         data: null,
+//       };
+//     }
+//     const [updatedRows] = await db.query(selectSql, [id]);
+//     await connection.commit();
+//     logger.info(`Category with ID: ${id} updated successfully.`);
+//     return { isSuccess: true, msg: "update successfully", data: updatedRows };
+//   } catch (error) {
+//     logger.error(`Error updating category with ID: ${id} - ${error.message}`);
+//     await connection.rollback();
+//     return { isSuccess: false, msg: error.message, data: null };
+//   } finally {
+//     logger.info(`Transaction complete for category with ID: ${id}`);
+//     connection.release();
+//   }
+// };
+
+// update course category
+const updateCourseCategoryAsync = async (category) => {
+  let sql =
+    "update coursecategories SET CategoryName=?, Level=?, ParentID=?, Notes=? where id=?";
+  let [result] = await db.query(sql, [
+    category.CategoryName,
+    category.Level,
+    category.ParentID,
+    Category.Notes,
+  ]);
+  if (result.affectedRows > 0) {
+    return { isSuccess: true, message: "Teacher updated successfully" };
   }
+  return { isSuccess: false, message: "Failed to update teacher" };
 };
-//delete course category by id
+
+// delete course category by id
 const deleteCourseCategoryByIdAsync = async (courseCategoryId) => {
   const connection = await db.getConnection();
   const checkParentIdSql =
@@ -148,6 +167,7 @@ const deleteCourseCategoryByIdAsync = async (courseCategoryId) => {
     );
   }
 };
+
 // get all course category
 const getAllCourseCategoryAsync = async () => {
   const sql = "SELECT * FROM coursecategories";
@@ -189,6 +209,8 @@ const getCourseCategoryById = async (courseId) => {
     throw new Error(`Error fetching course category: ${error.message}`);
   }
 };
+
+// get course category by pagination
 const getAllCourseCategoryByPage = async (page, pageSize) => {
   let countSql = "SELECT count(*) total FROM coursecategories; ";
   let resultCount = await db.query(countSql);
@@ -217,6 +239,8 @@ const getAllCourseCategoryByPage = async (page, pageSize) => {
     data: { items: categorylist, total: total },
   };
 };
+
+// delete course category by batch
 const deleteCourseCategoryByBatchAsync = async (ids) => {
   console.log(11111, ids);
   const idsString = ids.join(",");
